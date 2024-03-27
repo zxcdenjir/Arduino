@@ -1,0 +1,140 @@
+@font-face {
+    font-family: "Sansation Regular";
+    src: url('font/Sansation-Regular.ttf') format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "Sansation Bold";
+    src: url('font/Sansation-Bold.ttf') format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url('font/JetBrainsMono-Medium.ttf') format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "JetBrains Bold";
+    src: url('font/JetBrainsMono-Bold.ttf') format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+
+
+
+.container {
+    width: 1121px;
+    padding: 45px;
+}
+
+.blue {
+    color: #405665;
+    font-family: 'JetBrains Mono';
+}
+
+.red {
+    color: #cd171a;
+}
+
+.green {
+    color: #028837;
+}
+
+.light-blue {
+    color: #3b9dcd;
+}
+
+.heading {
+    font-size: 50px;
+    text-align: center;
+    margin-bottom: 100px;
+}
+
+.text {
+    font-family: "Sansation Regular";
+    text-indent: 30px;
+    width: 100%;
+    font-size: 31px;
+    margin-bottom: 25px;
+}
+
+b.text {
+    font-family: "Sansation Bold";
+}
+
+.text b {
+    font-family: "Sansation Bold";
+}
+
+li {
+    font-family: "Sansation Regular";
+    margin-left: 60px;
+    width: 100%;
+    font-size: 31px;
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15px;
+    margin-bottom: 100px;
+    max-width: 100%;
+    border: 1px solid #cccccc;
+    box-shadow: 8px 10px 15px rgb(196, 196, 196);
+}
+
+.button-block {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+button {
+    border-radius: 30px;
+    width: 260px;
+    padding-left: 15px;
+    padding-right: 15px;
+    text-align: center;
+    outline: 3px solid #88B4D1;
+    outline-offset: -3px;
+}
+
+code {
+    font-family: 'JetBrains Mono';
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 15px;
+    background-color: #d8ece4;
+    width: 80%;
+    font-size: 24px;
+    margin-bottom: 45px;
+    -moz-user-select: none;
+
+    -webkit-user-select: none;
+
+    -ms-user-select: none;
+
+    -o-user-select: none;
+
+    user-select: none;
+}
+
+code b {
+    font-family: 'JetBrains Bold';
+}
+
+@media (max-width: 992px) {
+    code {
+        width: 910px;
+        position: relative;
+        right: 45px;
+    }
+}

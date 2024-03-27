@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=992px, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/lesson.css">
+    <link rel="icon" href="styles/imgs/arduino-logo-big.png">
+    <title>Урок 11. Рисующий робот</title>
+</head>
+
+<body>
+    <header>
+        <a href="index.html"><b>
+                <p>Разработка гаджетов на Arduino</p>
+            </b></a>
+    </header>
+    <main>
+        <div class="container">
+            <p class="heading">Урок №11.<br>
+                Рисующий робот</p>
+
+            <p class="text" style="margin-bottom: 50px;">С помощью микроконтроллера Arduino можно создавать
+                не только небольшие программы, а и программировать
+                роботов из большого числа компонентов. К примеру, машина на радиоуправлении, робот-помощник, сортировщик
+                мусора и многое другое. Сегодня мы сделаем рисующего
+                робота, который, двигаясь по определенной траектории,
+                будет рисовать разнообразные фигуры.</p>
+
+            <b class="text"><span class="red">Сервопривод</span></b>
+
+            <p class="text" style="margin-top: 15px;">Начнем с того, что познакомимся с сервоприводом.
+                Серво — это устройство, которое может поворачиваться в заданное положение. Такие компоненты позволяют
+                роботу двигать конечностями, поднимать предметы или фиксировать определенные элементы.</p>
+
+            <img src="styles/imgs/11/image 156.png" alt="">
+
+            <p class="text">Главная задача сервопривода — поворот на заданный
+                угол и удерживание определенного положения. Устройство может поворачиваться на 180˚, а управлять им и
+                поворачивать его в нужную позицию можно с помощью Arduino.</p>
+
+            <p class="text">В сервомотор встроено все: двигатель, цепь обратной
+                связи и, самое главное, драйвер двигателя. Для работы
+                ему нужны напряжение, заземление и один управляющий
+                контакт. Определить, где какой пин, можно по цвету соединений. Коричневый соответствует GND, на красный
+                подается напряжение V5, а на оранжевый — сигнал. Подключим серводвигатель к схеме — это будет наш первый
+                элемент.</p>
+
+            <img src="styles/imgs/11/image 157.png" alt="">
+
+            <p class="text">Подключаем библиотеку для управления сервоприводом:</p>
+
+            <pre><code>#include &lt;Servo.h></code></pre>
+
+            <p class="text">Определим пин, к которому подключен серво:</p>
+
+            <pre><code>#define SERVO_MOTOR 5</code></pre>
+
+            <p class="text">Для управления сервоприводом нужно создать объект:</p>
+
+            <pre><code>Servo myservo;</code></pre>
+
+            <p class="text">Также в программе понадобятся переменные. <span class="blue">ServoAngle</span> — это будет
+                угол, на который
+                разворачивается сервопривод, а <span class="blue">gameStatus</span> — это мод игры, то есть то, что
+                должен делать робот:</p>
+
+            <pre><code><b>int</b> servoAngle = <span class="light-blue">90</span>;
+<b>int</b> gameStatus = <span class="light-blue">0</span>;</code></pre>
+
+            <p class="text">Напишем функцию и установим режим работы серво:</p>
+
+            <pre><code><b>void <span class="red">setup()</span></b> {
+    Serial.begin(<span class="light-blue">9600</span>);
+    myservo.attach(SERVO_MOTOR);
+    myservo.write(servoAngle);
+    delay(<span class="light-blue">1000</span>);
+}</code></pre>
+
+            <p class="text">В этой функции мы соединили объект <span class="blue">myservo</span> с пином
+                <span class="blue">SERVO_MOTOR</span>. После этого подали сигнал,
+                чтобы повернуть механизм на угол <span class="blue">servoAngle</span>, то есть на 90 градусов.
+            </p>
+
+            <p class="text">Затем переходим к циклу программы. Пока у нас есть
+                только один мод игры, вот его и настроим:</p>
+
+            <pre><code><b>void <span class="red">loop()</span></b> {
+    <b>switch</b> (gameStatus) {
+        <b>case</b> <span class="light-blue">0</span>:
+            startDraw();
+            <b>break</b>;
+      <span class="green">//<b>case</b> 1:</span>
+          <span class="green">//<b>break</b>;</span>
+    }
+}</code></pre>
+
+            <p class="text">Напишем функцию для управления сервоприводом.
+                Чтобы выполнить вращение, нужно передать значение
+                для управления приводом. Для сервопривода это угол
+                от 0 до 180. Передать это значение нужно в функцию
+                <span class="blue">myservo.write()</span>:
+            </p>
+
+            <pre><code><b>void <span class="red">drawLeft()</span></b> {
+    <b>for</b> (<b>int</b> i = <span class="light-blue">0</span>; i <= <span class="light-blue">90</span>; i += <span class="light-blue">1</span>) {
+        <b>if</b> (i <= <span class="light-blue">45</span>) {
+            servoAngle += <span class="light-blue">1</span>;
+        }
+        <b>else</b> {
+            servoAngle -= <span class="light-blue">1</span>;
+        }
+        myservo.write(servoAngle);
+        delay(<span class="light-blue">15</span>);
+    }
+}
+
+<b>void <span class="red">drawRight()</span></b> {
+    <b>for</b> (<b>int</b> i = <span class="light-blue">0</span>; i <= <span class="light-blue">90</span>; i += <span class="light-blue">1</span>) {
+        <b>if</b> (i <= <span class="light-blue">45</span>) {
+            servoAngle -= <span class="light-blue">1</span>;
+        }
+        <b>else</b> {
+            servoAngle += <span class="light-blue">1</span>;
+        }
+        myservo.write(servoAngle);
+        delay(<span class="light-blue">15</span>);
+    }
+}</code></pre>
+
+            <p class="text">В программе, чтобы активировать работу сервопривода,
+                будем обращаться к следующей функции:</p>
+
+            <pre><code><b>void <span class="red">startDraw()</span></b> {
+    Serial.print(<span class="red">"Angle: "</span>);
+    Serial.println(servoAngle);
+    drawLeft();
+    drawRight();
+  <span class="green">//gameStatus = 1;</span>
+}</code></pre>
+
+            <p class="text">Отлично, теперь сервопривод выполняет вращения.
+                Пока не будем менять мод игры, поскольку наш робот умеет
+                лишь управлять сервоприводом. Как только добавим новые компоненты и функции, сможем использовать строку
+                <span class="blue">//gameStatus = 1</span>, которая пока что закомментирована.
+            </p>
+
+            <b class="text"><span class="red">Двигатель постоянного тока</span></b>
+
+            <p class="text" style="margin-top: 15px;">Двигатели — неотъемлемая часть робототехники. Без
+                двигателей невозможно реализовать механизм вращения
+                лопастей или колес. Двигатели постоянного тока (DC
+                Motors) — одни из самых простых и популярных видов.</p>
+
+            <img src="styles/imgs/11/image 158.png" style="width: 50%;" alt="">
+
+            <p class="text">Управлять такими двигателями можно напрямую, без
+                дополнительных компонентов. Но такой подход достаточно сложно применить на практике. Для управления
+                двигателями постоянного тока используют драйвера двигателей, и один из самых популярных — L293D.</p>
+
+            <img src="styles/imgs/11/image 159.png" style="width: 50%;" alt="">
+
+            <p class="text">На микроконтроллере L293D расположено 16 пинов.
+                Нумерация выводов производится строго против часовой стрелки, а первый элемент находится возле выемки
+                на микроконтроллере.</p>
+
+            <img src="styles/imgs/11/image 160.png" style="width: 50%;" alt="">
+
+            <p class="text">Подключим два двигателя постоянного тока, драйвер
+                мотора и аккумуляторную батарею 9V.</p>
+
+            <img src="styles/imgs/11/image 161.png" alt="">
+
+            <p class="text">Мы подключили к пинам <span class="blue">Output 1</span>, <span class="blue">Output 2</span>
+                выходы одного двигателя, а к <span class="blue">Output 3</span> и <span class="blue">Output 4</span> —
+                выходы другого.</p>
+
+            <img src="styles/imgs/11/image 162.png" alt="">
+
+            <p class="text">На реальной схеме нужно будет еще присоединить
+                колесо к двигателю.</p>
+
+            <p class="text">Теперь вернемся к нашей программе, и с помощью
+                инструкции <span class="blue">#define</span> определим константы для номеров
+                пинов:</p>
+
+            <pre><code>#define PIN_ENA 6
+#define PIN_IN1 7
+#define PIN_IN2 8
+#define PIN_IN3 9
+#define PIN_IN4 10
+#define PIN_ENB 11</code></pre>
+
+            <p class="text">Создадим константу. Ее будем использовать в качестве
+                скорости движения робота:</p>
+
+            <pre><code><b>const int</b> speed = <span class="light-blue">255</span>;</code></pre>
+
+            <p class="text">Кроме того, создадим переменную, в которой будет
+                храниться длительность ожидания в миллисекундах:</p>
+
+            <pre><code><b>const int</b> waitTime = <span class="light-blue">3000</span>;</code></pre>
+
+            <p class="text">Создаем два массива с пинами, к которыми подключены моторы:</p>
+
+            <pre><code><b>const int</b> pinMotorA[<span class="light-blue">3</span>] = {PIN_ENA, PIN_IN1, PIN_IN2};
+<b>const int</b> pinMotorB[<span class="light-blue">3</span>] = {PIN_ENB, PIN_IN3, PIN_IN4};</code></pre>
+
+            <p class="text">Обязательно установим режим работы пинов. Для
+                этого добавим код в функцию <span class="blue">setup()</span>:</p>
+
+            <pre><code><b>void <span class="red">setup()</span></b> {
+    ...
+    ...
+
+    pinMode(PIN_IN1, OUTPUT);
+    pinMode(PIN_IN2, OUTPUT);
+    pinMode(PIN_ENA, OUTPUT);
+    pinMode(PIN_IN3, OUTPUT);
+    pinMode(PIN_IN4, OUTPUT);
+    pinMode(PIN_ENB, OUTPUT);
+
+    delay(<span class="light-blue">1000</span>);
+}</code></pre>
+
+            <p class="text">Мы запрограммируем новый мод игры. Добавим
+                в цикл название новой функции, которую позже напишем: </p>
+
+            <pre><code><b>void <span class="red">loop()</span></b> {
+    <b>switch</b> (gameStatus) {
+        <b>case</b> <span class="light-blue">0</span>:
+            startDraw();
+            <b>break</b>;
+        <b>case</b> <span class="light-blue">1</span>:
+            moveRobot();
+            <b>break</b>;
+    }
+}</code></pre>
+
+            <p class="text">Теперь, как только сервопривод сделает несколько
+                движений, наш робот начнет ехать. Прежде всего запрограммируем моторы на движение вперед и назад.
+                Подавая разные сигналы, можем управлять направлением движения:</p>
+
+            <pre><code><b>void <span class="red">moveForward</span></b>(<b>const int</b> pinMotor[<span class="light-blue">3</span>], <b>int</b> speed) {
+    digitalWrite(pinMotor[<span class="light-blue">1</span>], HIGH);
+    digitalWrite(pinMotor[<span class="light-blue">2</span>], LOW);
+    analogWrite(pinMotor[<span class="light-blue">0</span>], speed);
+}</code></pre>
+
+            <pre><code><b>void <span class="red">moveBackward</span></b>(<b>const int</b> pinMotor[<span class="light-blue">3</span>], <b>int</b> speed) {
+    digitalWrite(pinMotor[<span class="light-blue">1</span>], LOW);
+    digitalWrite(pinMotor[<span class="light-blue">2</span>], HIGH);
+    analogWrite(pinMotor[<span class="light-blue">0</span>], speed);
+}</code></pre>
+
+            <p class="text">Добавим функцию, которая будет полностью останавливать моторы:</p>
+
+            <pre><code><b>void <span class="red">fullStop</span></b>(<b>const int</b> pinMotor[<span class="light-blue">3</span>]) {
+    digitalWrite(pinMotor[1], LOW);
+    digitalWrite(pinMotor[2], LOW);
+    analogWrite(pinMotor[0], 0);
+}</code></pre>
+
+            <p class="text">Далее запрограммируем движение робота. Он должен
+                ехать вперед, назад и выполнять повороты вправо и влево:</p>
+
+            <pre><code><b>void <span class="red">moveRobot()</span></b> {
+    Serial.print(<span class="red">"F "</span>);
+    moveForward(pinMotorA, speed);
+    moveForward(pinMotorB, speed);
+    delay(waitTime);
+
+    Serial.print(<span class="red">"R "</span>);
+    moveForward(pinMotorA, speed); <span class="green">// move right</span>
+    moveForward(pinMotorB, (speed / <span class="light-blue">2</span>));
+    delay(waitTime);
+    
+    Serial.print(<span class="red">"B "</span>);
+    moveBackward(pinMotorA, speed);
+    moveBackward(pinMotorB, speed);
+    delay(waitTime);
+
+    Serial.print(<span class="red">"L "</span>); 
+    moveForward(pinMotorA, (speed / <span class="light-blue">2</span>));
+    moveForward(pinMotorB, speed); <span class="green">// move left</span>
+    delay(waitTime);
+
+    fullStop(pinMotorA);
+    fullStop(pinMotorB);
+    
+    Serial.println();
+    gameStatus = <span class="light-blue">0</span>;
+}</code></pre>
+
+            <p class="text">Теперь более детально рассмотрим функцию <span class="blue">moveRobot()</span>. Движение
+                вперед и назад реализованы с помощью функций <span class="blue">moveForward()</span> и
+                <span class="blue">moveBackward()</span>. Самая интересная часть программы — программирование
+                поворота. Чтобы робот повернул направо, нужно подать на правое колесо меньшую скорость, чем на левое,
+                например, в два раза меньше.
+            </p>
+
+            <p class="text">Чтобы программа работала правильно, раскомментируем строку <span
+                    class="blue">gameStatus</span>:</p>
+
+            <pre><code><b>void <span class="red">startDraw()</span></b> {
+    ...
+    ...
+    gameStatus = <span class="light-blue">1</span>;
+}</code></pre>
+
+            <p class="text" style="margin-bottom: 50px;">Запустим проект. Все работает, а робот уже может
+                рисовать различные фигуры. Давайте дополним программу, чтобы управлять скоростью робота с помощью
+                специального компонента.</p>
+
+            <b class="text"><span class="red">Потенциометр</span></b>
+
+            <p class="text" style="margin-top: 15px;">Потенциометр — устройство, с помощью которого
+                можно регулировать сопротивление. Потенциометры часто используют в устройствах, регулирующих яркость,
+                громкость, скорость движения.</p>
+
+            <img src="styles/imgs/11/image 163.png" style="width: 50%;" alt="">
+
+            <p class="text">Давайте ознакомимся с работой потенциометра и будем
+                использовать его для управления скоростью вращения
+                двигателей. При повороте вала (управляющего элемента) на потенциометре меняется сопротивление. То есть
+                в результате сигнал передается с измененным значением.</p>
+
+            <p class="text">Плата Arduino оснащена конвектором, который может преобразовывать аналоговое значение в
+                цифровое. В результате потенциометр вернет значение от 0 до 1023.
+                Если вал полностью повернуть в одну сторону, на пин поступит значение равное 0, то есть напряжение,
+                равное 0V. Если вал полностью повернуть в другую сторону, на пин
+                поступит значение равное 1023 или напряжение в 5V.</p>
+
+            <p class="text">Добавим потенциометр и подключим его к пину A0.</p>
+
+            <img src="styles/imgs/11/image 164.png" alt="">
+
+            <p class="text">Добавим в программу код для управления потенциометром. Сначала определим константу:</p>
+
+            <pre><code>#define PIN_POT A0</code></pre>
+
+            <p class="text">Закомментируем строку, где мы указывали, что скорость — это константа:</p>
+
+            <pre><code><span class="green">//const int speed = 255;</span></code></pre>
+
+            <p class="text">Теперь скорость — это переменная, которая будет
+                зависеть от сигнала с потенциометра:</p>
+
+            <pre><code><b>int</b> speed;</code></pre>
+
+            <p class="text">Установим режим работы пина. Добавим в код лишь
+                одну строку кода перед ожиданием <span class="blue">delay()</span>:</p>
+
+            <pre><code><b>void <span class="red">setup()</span></b> {
+    ...
+    ...
+    pinMode(PIN_POT, INPUT);
+
+    delay(<span class="light-blue">1000</span>);
+}</code></pre>
+
+            <p class="text">С потенциометра программа может получить число от
+                0 до 1023. Если оно будет равно 0, то нет смысла запускать
+                программу, потому что тогда скорость моторов будет
+                нулевая. И еще раз немного изменим код внутри цикла,
+                чтобы управлять скоростью моторов с потенциометра:</p>
+
+            <pre><code><b>void <span class="red">loop()</span></b> {
+    <b>int</b> value = analogRead(PIN_POT);
+    Serial.print(<span class="red">"Value: "</span>);
+    Serial.println(value);
+    <b>if</b> (value > <span class="light-blue">0</span>) {
+        speed = map(value, <span class="light-blue">0</span>, <span class="light-blue">1023</span>, <span class="light-blue">0</span>, <span class="light-blue">255</span>);
+        Serial.print(<span class="red">"Speed: "</span>);
+        Serial.println(speed);
+        <b>switch</b> (gameStatus) {
+            <b>case</b> <span class="light-blue">0</span>:
+                ...
+            <b>case</b> <span class="light-blue">1</span>:
+                ...
+        }
+    }
+}</code></pre>
+
+            <p class="text">Итак, в цикле в переменную <span class="blue">value</span> записываем значение
+                от 0 до 1023. Если оно больше 0, то переходим к основному циклу программы, иначе цикл снова повторяется.
+            </p>
+
+            <p class="text">В функции <span class="blue">loop()</span> мы используем функцию
+                <span class="blue">map()</span>, чтобы конвертировать числа из одного представления в другое.
+                Как вы помните, потенциометр может возвращать числа
+                от 0 до 1023. В то время как на моторы можем подавать
+                числа от 0 до 255. Чтобы преобразовать целые числа из одного представления в другое, используем функцию
+                <span class="blue">map()</span>. Первый ее параметр — это значение, которое будет преобразовывать.
+                Второй и третий параметры — это верхняя и нижняя границы числа, которое поступает, то есть от
+                0 до 1023. Последние два числа — это верхняя и нижняя границы нового диапазона, к которому приводим
+                число.
+            </p>
+
+            <p class="text">Наконец, программа готова. Можем запустить ее
+                в эмуляторе. Если все работает корректно, собираем робота и загружаем код на плату Arduino.</p>
+
+            <img src="styles/imgs/11/image 165.png" alt="">
+
+            <div class="button-block">
+                <a target="_blank" href="task_11.html">
+                    <button>Перейти к заданию</button>
+                </a>
+                <a href="final_work.html">
+                    <button>Следующий урок</button>
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

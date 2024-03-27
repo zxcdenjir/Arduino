@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=992px, initial-scale=1.0">
+        <link rel="stylesheet" href="styles/main.css">
+        <link rel="stylesheet" href="styles/lesson.css">
+        <link rel="icon" href="styles/imgs/arduino-logo-big.png">
+        <title>Урок 5. Кнопочные ковбои</title>
+    </head>
+    <body>
+        <header>
+            <a href="index.html"><b><p>Разработка гаджетов на
+                        Arduino</p></b></a>
+        </header>
+        <main>
+            <div class="container">
+                <p class="heading">Урок №5.
+                    Кнопочные ковбои</p>
+
+                <p class="text">Кнопочные ковбои — это забавная игра для
+                    нескольких игроков на скорость реакции. Игра начинается
+                    после звукового сигнала. Как только раздастся сигнал, игроки
+                    должны нажать на кнопку. Кто быстрее нажмет, тот и
+                    выиграл.</p>
+
+                <p class="text">Создадим такую же игру на Arduino. Будем
+                    использовать светодиоды, кнопки и пьезоэлемент
+                    (<span class="blue">Piezo</span>).
+                    Пьезоэлемент (<span class="blue">piezo</span>) —
+                    это электронное устройство, которое
+                    издает звук. Оно переводит напряжение в вибрацию, от
+                    чего и появляется звук.</p>
+
+                <p class="text">В <span class="green">Tinkercad Circuits</span>
+                    пьезоэлемент находится в разделе
+                    <span class="blue">Basic Components</span>.</p>
+
+                <img src="styles/imgs/5/image 90.png" alt>
+
+                <p class="text">Добавим на монтажную плату два
+                    <span class="blue">LED</span> и две
+                    <span class="blue">Pushbutton</span> для каждого игрока.
+                    Затем добавим <span class="blue">Piezo</span>,
+                    который будет издавать звуковой сигнал. Затем соединим
+                    кнопки с пинами 2 и 13, светодиоды подключим к пинам 3 и 12,
+                    а пьезоэлемент соединим с пином 7. Должна получиться
+                    схема.</p>
+
+                <img src="styles/imgs/5/image 91.png" alt>
+
+                <p class="text">Запрограммируем плату, чтобы мы смогли начать
+                    игру. На этом занятии перейдем от программирования блоками
+                    к программированию с помощью кода. Просматривать
+                    код программы мы можем как в виде блоков, так и в виде
+                    кода. Откроем режим
+                    <span class="blue">Blocks + Text</span>.</p>
+
+                <img src="styles/imgs/5/image 92.png" alt>
+
+                <p class="text">Слева размещен код в визуальном редакторе, а
+                    справа — код на языке программирования С++. У нас есть
+                    возможность разрабатывать код как в визуальном редакторе,
+                    так и в текстовом.</p>
+
+                <img src="styles/imgs/5/image 93.png" alt>
+
+                <p class="text">Однако возможности визуального редактора не
+                    такие широкие, как текстового. Интересные проекты с большим
+                    количеством разных функций можно писать именно
+                    на языке программирования. Чтобы перейти в режим
+                    редактирования кода, откроем режим
+                    <span class="blue">Text</span>.</p>
+
+                <img src="styles/imgs/5/image 94.png" alt>
+
+                <p class="text">Появится предупреждение, что мы потеряем скрипт,
+                    составленный из блоков. Нажимаем
+                    <span class="light-blue">Continue</span>.</p>
+
+                <img src="styles/imgs/5/image 95.png" alt>
+
+                <p class="text">В результате откроется редактор кода.</p>
+
+                <img src="styles/imgs/5/image 96.png" alt>
+
+                <p class="text">Рассмотрим структуру программы. Как видим,
+                    каждая программа на Arduino состоит из двух функций.
+                    Функции — это наборов команд, которые можно вызвать.
+                    Функция <span class="blue">setup()</span>
+                    вызывается один раз при запуске платы,
+                    когда на Arduino подается питание. То есть программа
+                    к ней обращается только один раз. Функция
+                    <span class="blue">loop()</span> вызывается
+                    постоянно, то есть код, который будет внутри
+                    нее, выполняется всегда. Удалим весь код, и напишем
+                    программу с нуля.</p>
+
+                <img src="styles/imgs/5/image 97.png" alt>
+
+                <p class="text">Сначала указываем номер пина, к которому
+                    подключен пьезоэлемент:</p>
+
+                <pre><code>#define BUZZER_PIN 7</code></pre>
+
+                <p class="text">Затем указываем количество игроков, их у нас
+                    будет два:</p>
+
+                <pre><code>#define PLAYER_COUNT 2</code></pre>
+
+                <p class="text">Дальше следует указать пины, к которым мы
+                    подключили кнопки. С этих пинов будем получать информацию
+                    о том, кто из игроков нажал раньше:</p>
+
+                <pre><code><b>int</b> buttonPins[PLAYER_COUNT] = {2, 13};</code></pre>
+
+                <p class="text">После этого передаем в программу номера пинов,
+                    к которым подключены светодиоды. После каждого раунда
+                    будет загораться светодиод возле того игрока, который
+                    одержал победу:</p>
+
+                <pre><code><b>int</b> ledPins[PLAYER_COUNT] = {3, 12};</code></pre>
+
+                <p class="text">Затем следует функция setup(), с которой
+                    начинается работа программы:</p>
+
+                <pre><code><b>void <span class="red">setup()</span></b>
+{
+    pinMode(BUZZER_PIN, OUTPUT);
+    <b>for</b> (<b>int</b> player = <span class="light-blue">0</span>; player < PLAYER_COUNT; ++player) {
+        pinMode(ledPins[player], OUTPUT);
+        pinMode(buttonPins[player], INPUT_PULLUP);
+    }
+}</code></pre>
+
+                <p class="text">Функция <span class="blue">pinMode()</span>
+                    устанавливает принцип работы
+                    для заданного пина. Необходимо добавить эту функцию
+                    для всех пинов, которые используются в программе.
+                    Существует три возможных способа работы:
+                    <span class="blue">INPUT</span>,
+                    <span class="blue">OUTPUT</span>,
+                    <span class="blue">INPUT_PULLUP</span>. Первый из них,
+                    <span class="blue">INPUT</span>, нужен для чтения
+                    данных с пина. <span class="blue">OUTPUT</span> передает
+                    данные в пин. К примеру, для светодиода используем
+                    <span class="blue">OUTPUT</span>,чтобы включать и выключать
+                    его. <span class="blue">INPUT_PULLUP</span> используется для
+                    кнопки.</p>
+
+                <p class="text">Поначалу может быть сложно перейти от
+                    программирования блоками к языку программирования. Упростить
+                    понимание кода можно с помощью комментариев. Так мы
+                    всегда будем знать, за что отвечает та или иная строчка
+                    кода. Чтобы написать комментарий, вводим две косые
+                    черты, а затем комментарий:</p>
+
+                <pre><code><span class="green">// comments</span></code></pre>
+
+                <p class="text">Теперь приступим к главному циклу программы.
+                    Напишем функцию <span class="blue">void loop()</span> и код
+                    программы: </p>
+
+                <pre><code><b>void <span class="red">loop()</span></b> {
+    <span class="green">// delay(ms)</span>
+    delay(random(<span class="light-blue">1000</span>, <span class="light-blue">3000</span>)); <span class="green">// random time</span>
+                               <span class="green">// from 1 to 3 seconds</span>
+    <span class="green">// tone(pin, frequency)</span>
+    <span class="green">// tone(pin, frequency, duration)</span>
+    tone(BUZZER_PIN, <span class="light-blue">2000</span>, <span class="light-blue">400</span>); <span class="green">// 2 kilohertz,</span>
+                                 <span class="green">// 400 milliseconds</span>
+    delay(<span class="light-blue">1000</span>);
+    <b>for</b> (<b>int</b> player = <span class="light-blue">0</span>; player = (player+<span class="light-blue">1</span>) % PLAYER_COUNT) {
+        <span class="green">// if player push button</span>
+            <b>if</b> (digitalRead(buttonPins[player])) {
+            <span class="green">// turn on the LED and the victory signal</span>
+            <span class="green">// for 2 seconds</span>
+            digitalWrite(ledPins[player], HIGH);
+            tone(BUZZER_PIN, <span class="light-blue">3500</span>, <span class="light-blue">300</span>);
+            delay(<span class="light-blue">1000</span>);
+            digitalWrite(ledPins[player], LOW); 
+            <span class="green">// There is a winner! Exit the for loop</span>
+            <b>break</b>;
+        }
+    }
+}</code></pre>
+
+                <p class="text">Разберем код программы. Игра начинается после
+                    звукового сигнала. Чтобы добавить случайное событие
+                    в игру, например, ожидание звукового сигнала, добавим
+                    функцию <span class="blue">delay()</span>. Внутри этой
+                    функции должно быть число в миллисекундах. Например, если
+                    хотим, чтобы программа ожидала 1 секунду, указываем
+                    <span class="blue">delay(1000)</span>.
+                    Чтобы игроки заранее не знали, когда прозвучит звуковой
+                    сигнал, время будет выбрано случайно, например,
+                    в промежутке от 1 до 3 секунд
+                    <span class="blue">random(1000, 3000)</span>.</p>
+
+                <p class="text">Затем раздастся звуковой сигнал
+                    <span class="blue">tone(BUZZER_PIN, 2000, 400)</span>.
+                    В функцию <span class="blue">tone()</span> обязательно нужно
+                    передать два значения. Первое из них — это пин, второе — это
+                    частота. Но можно добавить третье значение — длительность,
+                    то есть как долго тон будет звучать. Частота представляет
+                    собой целое число без знака и может принимать значение
+                    до 65 535. Но не все тона может услышать человеческое
+                    ухо. Лучше всего человек воспринимает звуки с частотой
+                    от 2000 до 5000, поэтому не стоит использовать значения
+                    выше или ниже предложенных.</p>
+
+                <p class="text">Затем игроки нажимают кнопки. Тот, кто нажал
+                    первым,
+                    выигрывает, и включается светодиод со стороны этого
+                    игрока. Чтобы узнать, кто первый нажал, нужно принять
+                    сигнал с кнопки, а сделать это можно с помощью функции
+                    <span class="blue">digitalRead()</span>. Чтобы включить
+                    светодиод, передаем ему сигнал
+                    <span class="blue">HIGH</span> с помощью функции
+                    <span class="blue">digitalWrite()</span>.</p>
+
+                <p class="text">Теперь наша программа готова.</p>
+
+                <img src="styles/imgs/5/image 98.png" alt="">
+
+                <div class="button-block">
+                    <a target="_blank" href="task_5.html">
+                        <button>Перейти к заданию</button>
+                    </a>
+                    <a href="lesson_6.html">
+                        <button>Следующий урок</button>
+                    </a>
+                </div>
+
+            </div>
+        </main>
+    </body>
+</html>

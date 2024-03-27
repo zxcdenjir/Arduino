@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=992px, initial-scale=1.0">
+        <link rel="stylesheet" href="styles/main.css">
+        <link rel="stylesheet" href="styles/lesson.css">
+        <link rel="icon" href="styles/imgs/arduino-logo-big.png">
+        <title>Урок 4. Создание игры пинг-понг на Arduino</title>
+    </head>
+    <body>
+        <header>
+            <a href="index.html"><b><p>Разработка гаджетов на
+                        Arduino</p></b></a>
+        </header>
+        <main>
+            <div class="container">
+                <p class="heading">Урок №4.
+                    Создание игры пинг-понг на Arduino</p>
+
+                <p class="text">На этом уроке мы создадим игру пинг-понг на
+                    плате Arduino. Для этого будем использовать светодиоды и
+                    кнопки. Отображать полет шарика будем с помощью светодиодов,
+                    которые будут по очереди загораться.</p>
+
+                <p class="text">Будем использовать LED зеленого, желтого и
+                    красного цветов. Светодиоды будут по очереди загораться.
+                    Как только засветиться желтый светодиод, игрок должен
+                    нажать кнопку, чтобы «отбить» шарик.</p>
+
+                <img src="styles/imgs/4/image 73.png" alt>
+
+                <p class="text">Если игрок отбил, то воображаемый шарик летит
+                    в сторону оппонента. Если же не успел отбить, то загораются
+                    все светодиоды — игра окончена.</p>
+
+                <img src="styles/imgs/4/image 74.png" alt>
+
+                <p class="text">Сначала собираем схему. Добавляем элементы
+                    <span class="blue">LED</span>,
+                    <span class="blue">Pushbutton</span> и
+                    <span class="blue">Resistor</span>,
+                    а также соединяем их с пинами на плате.</p>
+
+                <img src="styles/imgs/4/image 75.png" alt>
+
+                <p class="text">Для резисторов, которые мы соединили с кнопками,
+                    указываем значения.</p>
+
+                <img src="styles/imgs/4/image 76.png" alt>
+
+                <p class="text">Запрограммируем плату Arduino. Сначала создадим
+                    две переменные <span class="blue">gameOver</span> и
+                    <span class="blue">animationScore</span>.</p>
+
+                <img src="styles/imgs/4/image 77.png" alt>
+
+                <p class="text">В первой будем хранить два числа — 0 или 1. Если
+                    значение <span class="blue">gameOver</span> равно 0, игра
+                    продолжается, а если
+                    меняется на 1, игра завершена.</p>
+
+                <p class="text">Переменная
+                    <span class="blue">animationScore</span>
+                    — это скорость анимации.
+                    Игра будет интереснее, если анимация будет ускоряться
+                    с каждым разом. Для этого мы будем менять значение
+                    переменной, а все блоки, где указываем скорость, будут
+                    принимать новое значение.</p>
+
+                <p class="text">Затем добавим блок
+                    <span class="blue">repeat while</span>. Весь код внутри
+                    этого блока будет повторяться до тех пор, пока выполняется
+                    условие. Пока <span class="blue">gameOver</span> будет равна
+                    0, игра продолжается.</p>
+
+                <img src="styles/imgs/4/image 78.png" alt>
+
+                <p class="text">Отдельно создадим условие
+                    <span class="blue">if</span>. Если нажата кнопка,
+                    которую мы соединили с пином 2, то есть кнопка справа,
+                    то загораются светодиоды справа налево. Иначе, если
+                    нажата кнопка слева, то загораются светодиоды слева
+                    направо.</p>
+
+                <img src="styles/imgs/4/image 79.png" alt>
+
+                <p class="text">Добавим блоки кода, чтобы светодиоды по очереди
+                    включались и выключались. Должны включаться все
+                    светодиоды, кроме красных. Если вдруг загорелись светодиоды
+                    красного цвета, значит игрок проиграл.</p>
+
+                <img src="styles/imgs/4/image 80.png" alt>
+
+                <p class="text">Игроки теперь видят, как меняется свет, словно
+                    летит шарик в пин-понге. Другому же игроку нужно его
+                    оттолкнуть. Если мигнул оранжевый светодиод, а кнопка не
+                    нажата, то игра окончена. Загораются красные светодиоды, а в
+                    <span class="blue">gameOver</span> записывается значение 1.
+                    Иначе, если игрок успел нажать кнопку, то скорость анимации
+                    — <span class="blue">animationScore</span> —
+                    увеличивается.</p>
+
+                <img src="styles/imgs/4/image 81.png" alt>
+
+                <p class="text">Теперь повторим то же самое, но в обратном
+                    порядке. Сначала загораются LED-светодиоды.</p>
+
+                <img src="styles/imgs/4/image 82.png" alt>
+
+                <p class="text">Затем проверяем, отбил ли другой игрок мяч.</p>
+
+                <img src="styles/imgs/4/image 83.png" alt>
+
+                <p class="text">Игра будет продолжаться до тех пор, пока кто-то
+                    не проиграет. Проигрыш означает, что игрок не успел
+                    отбить шарик. Как вы помните, если игрок проиграл,
+                    то в переменную <span class="blue">gameOver</span>
+                    записывается 1, а, значит, игра останавливается.
+                    Добавим блоки с условием в блок
+                    <span class="blue">repeat</span>.</p>
+
+                <img src="styles/imgs/4/image 84.png" alt>
+
+                <p class="text">Отлично, мы запрограммировали игру! Теперь
+                    сделаем так, чтобы после проигрыша дважды мигнули все
+                    светодиоды.</p>
+
+                <img src="styles/imgs/4/image 85.png" alt>
+
+                <p class="text">Последний блок кода добавим в конец программы,
+                    после repeat. Запускаем эмуляцию. Теперь можем сыграть
+                    в пинг-понг на Arduino.</p>
+
+                <img src="styles/imgs/4/image 86.png" alt>
+
+                <div class="button-block">
+                    <a target="_blank" href="task_4.html">
+                        <button>Перейти к заданию</button>
+                    </a>
+                    <a href="lesson_5.html">
+                        <button>Следующий урок</button>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

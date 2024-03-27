@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=992px, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/lesson.css">
+    <link rel="icon" href="styles/imgs/arduino-logo-big.png">
+    <title>Урок 1. Знакомство с Arduino</title>
+</head>
+
+<body>
+    <header>
+        <a href="index.html"><b>
+                <p>Разработка гаджетов на
+                    Arduino</p>
+            </b></a>
+    </header>
+    <main>
+        <div class="container">
+
+            <p class="heading">Урок №1. Знакомство с
+                <span class="blue">Arduino</span>
+            </p>
+
+            <p class="text">Мы начинаем курс Arduino, в котором познакомимся с микроконтроллером, узнаем о разнообразных
+                дополнениях к плате и создадим крутые гаджеты.</p>
+
+            <p class="text"><span class="blue"><b>Arduino</b></span> — это
+                электронная плата или
+                микроконтроллер. Его можно подключить к компьютеру по USB и
+                запрограммировать. Загрузить программу на микроконтроллер
+                так же легко, как и подключить плату — всего одна кнопка, и
+                у нас в руках готовый гаджет!</p>
+
+            <p class="text">Мы будем использовать <span class="blue">Arduino UNO</span> — один из
+                лучших микроконтроллеров, с которого следует начинать знакомство с электроникой.</p>
+
+            <img src="styles/imgs/1/image 1.png" alt>
+
+            <p class="text">На плате расположены разъемы — пины. Пин Vin
+                по-зволяет питать плату от внешнего источника, например,
+                батареи или аккумулятора. Пины 5V и 3.3V используются для
+                подачи питания (+), GND — для подключения земли (-). Также
+                питать плату можно с помощью
+                обычного USB.</p>
+
+            <img src="styles/imgs/1/image 2.png" alt>
+
+            <p class="text">Помимо самой платы, для Arduino есть много
+                разных дополнений. Макетная плата, датчики тепла,
+                освещенности и влажности, резисторы и светодиоды</p>
+
+            <img src="styles/imgs/1/image 3.png" alt>
+
+            <b><span class="red">
+                    <p class="text" style="text-indent: 0px;">Tinkercad
+                        Circuits</p>
+                </span></b>
+
+            <p class="text">Tinkercad Circuits — это онлайн-конструктор
+                электронных схем, в том числе и на Arduino. В программе
+                можно подключать компоненты к схеме, программировать их и
+                запускать эмуляцию</p>
+
+            <img src="styles/imgs/1/image 4.png" alt>
+
+            <p class="text">
+                Давайте создадим свою первую схему. Переходим на сайт
+                <a class="link" target="_blank" href="https://www.tinkercad.com/circuits" style="color:blue">
+                    <u>https://www.tinkercad.com/circuits</u>
+                </a>
+                и нажимаем <span class="green"><b>Start Tinkering (Начать
+                        работу)</b></span>.
+                Создаём аккаунт и переходим в <span class="green"><b>Ваши
+                        проекты</b></span>. Нажимаем кнопку
+                <span class="light-blue"><b>создать</b></span> <span style="font-family: 'JetBrains Mono';">-></span>
+                Цепь.
+            </p>
+
+            <p class="text">Панель в верхней левой части экрана нужна,
+                чтобы управлять проектом. Здесь мы сможем повернуть деталь
+                (<span class="blue">Rotate</span>), удалить (<span class="blue">Delete</span>), отменить (<span
+                    class="blue">Undo</span>) или вернуть
+                изменения (<span class="blue">Redo</span>), добавить
+                аннотацию (<span class="blue">Annotation</span>) и
+                отобразить или скрыть элемент (<span class="blue">View/Hide</span>).</p>
+
+            <img src="styles/imgs/1/image 5.png" alt>
+
+            <p class="text">На панели, расположенной в правой верхней части
+                окна, можем открыть код (<span class="blue">Code</span>),
+                запустить эмуляцию (<span class="blue">Start
+                    simulation</span>), экспортировать проект (<span class="blue">Export</span>) или поделить
+                (<span class="blue">Share</span>).</p>
+
+            <img src="styles/imgs/1/image 6.png" alt>
+
+            <p class="text">В правой части расположены компоненты,
+                которыми мы можем пользоваться. По умолчанию это базовый
+                набор, но если мы нажмем на выпадающее меню возле <span class="blue">Basic</span>, то
+                увидим дополнительные элементы.</p>
+
+            <img src="styles/imgs/1/image 7_8.png" alt>
+
+            <p class="text">Откроем раздел <span class="blue">Arduino</span> — нам покажут уже готовые
+                схемы.</p>
+
+            <img src="styles/imgs/1/image 9.png" alt>
+
+            <p class="text">Поместим элемент <span class="blue">Breadboard</span> на рабочую
+                область.</p>
+
+            <img src="styles/imgs/1/image 10.png" alt>
+
+            <p class="text"> В схеме, которую мы выбрали, используется
+                макетная плата, давайте рассмотрим подробнее, что это и для
+                чего используется в электронике. Макетная (монтажная) плата
+                или breadboard — это платформа, с помощью которой создают
+                как простые схемы, так и сложные решения. Монтажная плата
+                выполнена таким образом, что к ней можно подключить больше
+                устройств, чем могли бы подключить к самой плате.</p>
+
+            <p class="text"> На плате есть питание (+) и заземление (-), они
+                выделены красным и синим цветом. Это используется для
+                удобства, чтобы не перепутать землю и напряжение, и не
+                испортить электронный прибор.</p>
+
+            <img src="styles/imgs/1/image 11.png" alt>
+
+            <p class="text">Макетная плата устроена таким образом, что ее
+                элементы связаны между собой. На рисунке ниже красным,
+                синим и сиреневым цветами показан принцип связывания
+                компонентов на breadboard.</p>
+
+            <img src="styles/imgs/1/image 12.png" alt>
+
+            <p class="text">Замечательно, теперь мы можем научиться
+                подключать к плате компоненты. Возьмем LED-диод и Resistor
+                и разместим их на монтажной плате. Резистор нужен для
+                того, чтобы ограничивать ток, без него не обходится ни
+                одна электронная схема. Если бы мы не добавили резистор, то
+                диод бы попросту сгорел!</p>
+
+            <img src="styles/imgs/1/image 13.png" alt>
+
+            <p class="text">Затем нажмем на резистор и выставим для него
+                сопротивление 220.</p>
+
+            <img src="styles/imgs/1/image 14.png" alt>
+
+            <p class="text">Также можем нажать на диод и выбрать цвет.</p>
+
+            <img src="styles/imgs/1/image 15.png" alt>
+
+            <p class="text">Соединим пин 9 с макетной платой.</p>
+
+            <img src="styles/imgs/1/image 16.png" alt>
+
+            <p class="text">Чтобы соединение выглядело аккуратнее, дважды
+                кликнем по соединению, пока не появится точка. Потянем за
+                точку в сторону и разместим соединение.</p>
+
+            <img src="styles/imgs/1/image 17.png" alt>
+
+            <p class="text">Схема готова! Перейдем в раздел <span class="blue">Code</span>. Как
+                видите, блоки сгенерировались автоматически, поэтому
+                можем сразу запустить симуляцию. Диод будет загораться, и
+                через секунду гаснуть, пока мы не остановим программу.</p>
+
+            <img src="styles/imgs/1/image 18.png" alt>
+
+            <p class="text">Итак, мы узнали, как пользоваться эмулятором
+                Arduino в Tinkercad, создали простую схему и рассмотрели,
+                как запускать эмуляцию. Это лишь малая часть того, что
+                можно создать с помощью Arduino. С помощью микро-контроллера
+                можно делать роботов, создавать различные
+                механизмы и гаджеты.</p>
+
+            <div class="button-block">
+                <a target="_blank" href="task_1.html">
+                    <button>Перейти к заданию</button>
+                </a>
+                <a href="lesson_2.html">
+                    <button>Следующий урок</button>
+                </a>
+            </div>
+
+        </div>
+    </main>
+</body>
+
+</html>

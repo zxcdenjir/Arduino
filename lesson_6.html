@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=992px, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/lesson.css">
+    <link rel="icon" href="styles/imgs/arduino-logo-big.png">
+    <title>Урок 6. Сигналы и датчик освещенности</title>
+</head>
+
+<body>
+    <header>
+        <a href="index.html"><b>
+                <p>Разработка гаджетов на Arduino</p>
+            </b></a>
+    </header>
+    <main>
+        <div class="container">
+            <p class="heading">Урок №6.
+                Сигналы. Датчик освещенности</p>
+            <p class="text">На прошлых занятиях мы поработали со светодиодами
+                и кнопками. Теперь нам предстоит детально изучить
+                сигналы, их виды и принципы работы, а также научиться
+                управлять яркостью светодиодов.</p>
+
+            <p class="text">Реальный мир не цифровой. Аналоговые сигналы
+                всюду окружают нас — это изменения температуры,
+                влажности воздуха и освещенности. Наши органы чувств
+                воспринимают информацию в аналоговой форме, то есть
+                непрерывно во времени. К примеру, изменение комнатной
+                температуры или влажности воздуха. Если измерять, например, колебания температуры каждый час, то
+                последовательность данных в градусах Цельсия будет выглядеть
+                так: 20,3; 20; 20,5; 21; 20,8 и так далее.</p>
+
+            <img src="styles/imgs/6/image 102.png" alt>
+
+            <p class="text">Цифровой сигнал отличается от аналогового тем,
+                что он принимает только два значения. Этот тип сигнала кодирует информацию в виде строки, где 0 (LOW)
+                и 1 (HIGH). Большинство современных электронных
+                устройств, включая компьютеры и мобильные телефоны,
+                кодируют данные в виде цифровых сигналов. По сравнению с аналоговыми сигналами, цифровые сигналы легче
+                и точнее передавать.</p>
+
+            <img src="styles/imgs/6/image 103.png" alt>
+
+            <p class="text">Теперь мы знаем, чем отличаются аналоговые и цифровые сигналы. Однако Arduino не может
+                принимать значения температуры или освещенности, как мы их воспринимаем. Микропроцессоры не могут
+                обрабатывать такие данные, как люди. Нужно перевести полученные данные
+                в такое значение, которое мог бы прочитать микрочип.
+                Для этого следует использовать датчики, которые в этом
+                случае преобразуют температуру в значение напряжения.
+                Эти значения отличаются от HIGH и LOW, которые характеризуют цифровые сигналы, потому что они могут
+                принимать любое значение от 0 до 5 вольт, например,
+                0.3 вольт, 3.27 вольт, 4.99 вольт. Это и есть аналоговый
+                сигнал, он принимает намного больше, чем два значения.
+                Количество передаваемой информации зависит только
+                от возможностей микроконтроллера, с которым будем
+                работать. Микроконтроллер Arduino, к примеру, может
+                различать только 1024 значения: от 0 до 1023.</p>
+
+            <p class="text">Посмотрим, как с помощью аналоговых сигналов получать информацию об освещенности. Для этого
+                будем использовать датчик освещенности или фоторезистор.
+                Фоторезистор или фотоэлемент — это регулируемый
+                по интенсивности света переменный резистор. Чем выше
+                интенсивность света, тем ниже сопротивление фоторезистора.</p>
+
+            <img src="styles/imgs/6/image 104.png" alt>
+
+            <p class="text">Создадим проект, в котором светодиод будет включаться при плохом освещении и выключаться при
+                хорошем.</p>
+
+            <p class="text">В Tinkercad Circuit есть готовая схема, к которой уже
+                подключен диод и фоторезистор. Введем в строку поиска
+                «<span class="blue">photoresistor</span>», и добавим схему <span class="blue">Calibration</span>.</p>
+
+            <img src="styles/imgs/6/image 105.png" alt>
+
+            <p class="text">На этой схеме светодиод подключен к пину <span class="blue">Digital</span>.
+                Цифровой сигнал может быть <span class="blue">HIGH</span> или <span class="blue">LOW</span>. Этого
+                достаточно, чтобы включать и выключать светодиод.
+                Фоторезистор соединен с аналоговым пином <span class="blue">A0</span>, чтобы
+                получать аналоговый сигнал</p>
+
+            <img src="styles/imgs/6/image 106.png" alt>
+
+            <p class="text">А теперь перейдем к коду.</p>
+
+            <img src="styles/imgs/6/image 107.png" alt>
+
+            <p class="text">Для этой схемы уже есть код. Его нужно удалить,
+                чтобы написать свою программу. Для начала добавим
+                на макетную плату пьезоэлемент, чтобы слышать определенный звук. Будем менять тон и длительность звука,
+                в зависимости от уровня освещенности. Подключим
+                пьезоэлемент к пину 8.</p>
+
+            <img src="styles/imgs/6/image 108.png" alt>
+
+            <p class="text">Теперь запрограммируем плату. Сначала указываем
+                пины, к которым мы подключили датчики:</p>
+
+            <pre><code><b>const int</b> pResistor = A0; <span class="green">// Photoresistor at Arduino</span>
+                          <span class="green">// analog pin A0</span>
+<b>const int</b> ledPin = <span class="light-blue">9</span>;     <span class="green">// Led pin at Arduino pin 9</span>
+<b>const int</b> buzzerPin = <span class="light-blue">8</span>;</code></pre>
+
+            <p class="text">Затем создаем переменную, в которой будем хранить
+                информацию с фоторезистора. Поскольку мы будем обрабатывать аналоговый сигнал, то в этой переменной
+                будут храниться значения с 0 до 1023: </p>
+
+            <pre><code><span class="green">//Variables</span>
+<b>int</b> value; <span class="green">// Store value from photoresistor (0-1023)</span></code></pre>
+
+            <p class="text">После этого нужно создать функцию <span class="blue">setup()</span>:</p>
+
+            <pre><code><b>void <span class="red">setup()</span></b>{
+    pinMode(ledPin, OUTPUT);   <span class="green">// Set lepPin - 9 pin</span>
+                               <span class="green">// as an output</span>
+    pinMode(pResistor, INPUT); <span class="green">// Set pResistor - A0 pin</span>
+                               <span class="green">// as an input (optional)</span>
+    pinMode(buzzerPin, OUTPUT);
+    Serial.begin(<span class="light-blue">9600</span>);
+}</code></pre>
+
+            <p class="text">На этот раз будем выводить в Serial Monitor значения
+                переменной <span class="blue">value</span>. Так мы сможем увидеть, как меняется
+                освещенность. Для этого воспользуемся функцией <span class="blue">Serial.begin()</span>.</p>
+
+            <p class="text">Затем переходим к главному циклу программы:</p>
+
+            <pre><code><b>void <span class="red">loop()</span></b> {
+    value = analogRead(pResistor);
+    Serial.println(value);
+
+    <span class="green">//You can change value "25"</span>
+    <b>if</b> (value > <span class="light-blue">935</span>) {
+        digitalWrite(ledPin, LOW); <span class="green">//Turn led off</span>
+        tone(buzzerPin, <span class="light-blue">2000</span>, <span class="light-blue">50</span>);
+    }
+    <b>else</b> {
+        digitalWrite(ledPin, HIGH); <span class="green">//Turn led on</span>
+        tone(buzzerPin, <span class="light-blue">3000</span>, <span class="light-blue">400</span>);
+    }
+    delay(<span class="light-blue">500</span>); <span class="green">//Small delay</span>
+}</code></pre>
+
+            <p class="text">Передаем в переменную <span class="blue">value</span> аналоговый сигнал
+                с фоторезистора. Воспользуемся для этого функцией
+                <span class="blue">analogRead(pResistor)</span>.
+            </p>
+
+            <p class="text">Затем число, которое хранится в переменной, выводим
+                в Serial Monitor. Используем для этого функцию <span class="blue">Serial.println(value)</span>.</p>
+
+            <p class="text">Сравниваем значение в переменной <span class="blue">value</span> с числом.
+                Если значение меньше выбранного нами числа, то есть
+                темно, то включаем светодиод. Если значение больше,
+                то выключаем светодиод.</p>
+
+            <p class="text">Запустим эмуляцию. Чтобы поэкспериментировать
+                с фоторезистором и подать на него больше или меньше
+                света, нажмем на него. Появится ползунок. Можем перетащить его правее, чтобы подать больше света, или
+                левее.</p>
+
+            <img src="styles/imgs/6/image 109.png" alt>
+
+            <p class="text">Как обрабатывать аналоговый сигнал, мы уже знаем.
+                А теперь рассмотрим, как управлять яркостью светодиода с помощью аналоговых пинов. Будем использовать
+                функцию <span class="blue">analogWrite()</span> для постепенного включения
+                и выключения светодиода. <span class="blue">AnalogWrite</span> использует широтно-импульсную модуляцию
+                (ШИМ), чтобы управлять
+                мощностью и создать эффект затухания. Передавать
+                можно 256 значение от 0 до 255. Попробуем с помощью
+                аналогового сигнала управлять яркостью светодиода.
+                Добавим LED и соединим его с пином, возле которого
+                есть специальное обозначение в виде тильды (~).
+            </p>
+
+            <img src="styles/imgs/6/image 110.png" alt>
+
+            <p class="text">Далее добавим в начало кода переменные:</p>
+
+            <pre><code><b>const int</b> led = <span class="light-blue">6</span>;   <span class="green">// the PWM pin the LED</span>
+                     <span class="green">// is attached to</span>
+<b>int</b> brightness = <span class="light-blue">0</span>;  <span class="green">// how bright the LED is</span>
+<b>int</b> fadeAmount = <span class="light-blue">30</span>; <span class="green">// how many points to fade</span>
+                     <span class="green">// the LED by</span></code></pre>
+
+            <p class="text">Мы инициализировали пин, к которому подключен
+                светодиод (<span class="blue">led</span>). Кроме того, указали начальное значение яркости (<span
+                    class="blue">brightness</span>) и значение, на которое
+                будет менять яркость (<span class="blue">fadeAmount</span>).</p>
+
+            <p class="text">Затем нужно инициализировать светодиод внутри
+                функции <span class="blue">setup()</span>:</p>
+
+            <pre><code><b>void <span class="red">setup()</span></b> {
+    ...
+    pinMode(led, OUTPUT); <span class="green">// declare pin 9 to be</span>
+                          <span class="green">// an output:</span>
+}</code></pre>
+
+            <p class="text">После этого немного изменим код внутри цикла.
+                Нужно сделать так, чтобы светодиод постепенно загорался при плохом освещении и медленно выключался
+                при ярком свете:</p>
+
+            <pre><code><b>void <span class="red">loop()</span></b>{
+    ...
+    <span class="green">// set the brightness of pin 9:</span>
+    analogWrite(led, brightness);
+
+    <b>if</b> (value > <span class="light-blue">935</span>) {
+    ...
+        <b>if</b> (brightness > <span class="light-blue">0</span>) {
+        <span class="green">// change the brightness for next time</span>
+        <span class="green">// through the loop:</span>
+            brightness = brightness - fadeAmount;
+            <b>if</b> (brightness < <span class="light-blue">0</span>) {
+                brightness = <span class="light-blue">0</span>;
+            }
+        }
+    }
+    <b>else</b> {
+    ...
+        <b>if</b> (brightness < <span class="light-blue">255</span>) {
+        <span class="green">// change the brightness for next time</span>
+        <span class="green">// through the loop:</span>
+            brightness = brightness + fadeAmount;
+            <b>if</b> (brightness > <span class="light-blue">255</span>) {
+                brightness = <span class="light-blue">255</span>;
+            }
+        }
+    }
+}</code></pre>
+
+            <p class="text">Таким образом мы добавили еще одно условие внутри
+                <span class="blue">if</span>. Если на фоторезистор поступило много света, а светодиод не включен, то его
+                <span class="blue">brightness</span> увеличивается.
+                Иначе значение в переменной <span class="blue">brightness</span> уменьшается
+            </p>
+
+            <img src="styles/imgs/6/image 111.png" alt>
+
+            <p class="text">Программа готова! Зная, как работают аналоговые
+                сигналы, можно создавать различные приспособления.
+                К примеру умные лампы для дома, яркость или цвет
+                которых можно изменить, используя приложение на мобильном телефоне, или же сделать умные лампы для
+                уличного освещения, которые будут включаться и выключаться при определенном уровне освещенности.</p>
+
+            <div class="button-block">
+                <a target="_blank" href="task_6.html">
+                    <button>Перейти к заданию</button>
+                </a>
+                <a href="lesson_7.html">
+                    <button>Следующий урок</button>
+                </a>
+            </div>
+
+        </div>
+    </main>
+</body>
+
+</html>

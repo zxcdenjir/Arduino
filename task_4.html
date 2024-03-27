@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=992px, initial-scale=1.0">
+        <link rel="stylesheet" href="styles/main.css">
+        <link rel="stylesheet" href="styles/lesson.css">
+        <link rel="icon" href="styles/imgs/arduino-logo-big.png">
+        <title>Практическая работа №4</title>
+    </head>
+    <body>
+        <header>
+            <a href="index.html"><b><p>Разработка гаджетов на
+                        Arduino</p></b></a>
+        </header>
+        <main>
+            <div class="container">
+
+                <p class="heading">Практическая работа №4.<br>
+                    Статистика игры</p>
+
+                <b class="text">Задание 1</b><br>
+                <p class="text">Создайте кликер на Arduino. Суть игры
+                    заключается в том, чтобы нажимать кнопку чаще,
+                    чем это сделает противник.</p>
+                <p class="text">Сначала добавьте все элементы на схему.</p>
+
+                <img style="margin-bottom: 25px;" src="styles/imgs/4/image 87.png" alt>
+
+                <p class="text">Затем перейдите к программированию платы.
+                    Красный диод должен гореть до тех пор, пока не начнется
+                    игра.
+                    Как только один из игроков нажмет на центральную кнопку,
+                    начнется игра. В этот момент красный диод выключается,
+                    а зеленый загорается.</p>
+
+                <p class="text">Создайте три переменные:
+                    <span class="blue">time</span>,
+                    <span class="blue">player1</span>,
+                    <span class="blue">player2</span>. В начале
+                    игры все они должны быть равны <span class="blue">0</span>.
+                    Пускай игра повторяется до
+                    тех пор, пока <span class="blue">time</span> меньше
+                    <span class="blue">200</span>. Для этого воспользуйтесь
+                    блоком <span class="blue">repeat while</span>.
+                    Каждый раз, когда игрок нажимает
+                    на кнопку, ему добавляется <span class="blue">1</span> балл.
+                </p>
+
+                <img style="margin-bottom: 25px;"
+                    src="styles/imgs/4/image 88.png" alt>
+
+                <p class="text">Когда время закончится, подсветятся светодиоды у
+                    того игрока, который победил. Если ничья, то загораются
+                    диоды и у первого, и у второго игрока.</p>
+
+                <img style="margin-bottom: 60px;"
+                    src="styles/imgs/4/image 89.png" alt>
+
+                <div class="button-block">
+                    <a target="_blank" href="lesson_3.html">
+                        <button>Предыдущий урок</button>
+                    </a>
+                    <a href="lesson_5.html">
+                        <button>Следующий урок</button>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

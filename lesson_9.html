@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=992px, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/lesson.css">
+    <link rel="icon" href="styles/imgs/arduino-logo-big.png">
+    <title>Урок 9. Игра на Arduino «Охотник»</title>
+</head>
+
+<body>
+    <header>
+        <a href="index.html"><b>
+                <p>Разработка гаджетов на Arduino</p>
+            </b></a>
+    </header>
+    <main>
+        <div class="container">
+            <p class="heading">Урок №9.<br>
+                Игра на Arduino «Охотник»</p>
+
+            <p class="text">Arduino, как вы уже знаете, это электронная плата.
+                С ее помощью можно создавать как простые, так и сложные электронные системы.
+                Давайте сделаем на Arduino игру «Охотник». Игра интересна тем, что она развивает
+                скорость реакции.</p>
+
+            <p class="text">Перейдем к проектированию системы. В проекте
+                будем использовать LCD-дисплей, LED-светодиоды двух
+                цветов и кнопку. Как только игра начнется, в случайном
+                порядке на доли секунд загораются светодиоды. Задача
+                игрока состоит в том, чтобы нажать кнопку в тот момент,
+                когда засветится красный светодиод.</p>
+
+            <p class="text">Создадим новый проект в Tinkercad Circuits и соберем его.</p>
+
+            <img src="styles/imgs/9/image 132.png" style="margin-bottom: 25px;" alt="">
+
+            <img src="styles/imgs/9/image 133.png" alt="">
+
+            <p class="text">Итак, мы соединили светодиоды синего цвета с пинами D5-D10, а красный подключили к пину D0.
+                Для наглядности изменили цвета соединений, то есть от синих светодиодов следуют соединения синего цвета,
+                а от красного светодиода соединения красного цвета. Кнопку подключили к пину 13.</p>
+
+            <p class="text">Перейдем к программированию платы. Начнем с того, что подключим библиотеку:</p>
+
+            <pre><code>#include &lt;LiquidCrystal.h&gt;</code></pre>
+
+            <p class="text">Модуль <span class="blue">LiquidCrystal.h</span> нужен для работы с LCD-дисплеем.</p>
+
+            <p class="text">Затем определим переменные и кнопку:</p>
+
+            <pre><code>#define LED_RED 0    <span class="green">// red led pin</span>
+#define LED_BLUE1 6  <span class="green">// blue led pin</span>
+#define LED_BLUE2 7  <span class="green">// blue led pin</span>
+#define LED_BLUE3 8  <span class="green">// blue led pin</span>
+#define LED_BLUE4 9  <span class="green">// blue led pin</span>
+#define LED_BLUE5 10 <span class="green">// blue led pin</span>
+
+#define BUTTON_PIN 13</code></pre>
+
+            <p class="text">Инициализируем библиотеку, связав выводы LCD с номерами пинов на Arduino:</p>
+
+            <pre><code>LiquidCrystal <span class="red">lcd</span>(<span class="light-blue">12</span>, <span class="light-blue">11</span>, <span class="light-blue">5</span>, <span class="light-blue">4</span>, <span class="light-blue">3</span>, <span class="light-blue">2</span>);
+<span class="green">// LiquidCrystal lcd_name(rs, en, d4, d5, d6, d7);</span></code></pre>
+
+            <p class="text">Кроме того, создадим массив — набор переменных, доступ к которым осуществляется с помощью
+                индекса:</p>
+
+            <pre><code><b>int</b> myPins[] = {LED_RED, LED_BLUE1, LED_BLUE2, LED_BLUE3, 
+                LED_BLUE4, LED_BLUE5};</code></pre>
+
+            <p class="text"><span class="blue">MyPins</span> и есть наш массив. Каждый элемент в массиве
+                находится в определенной ячейке с конкретным адресом,
+                начиная с 0. Зная индекс, можно обратиться к определенному элементу в массиве. Чтобы это сделать,
+                достаточно указать имя массива, а в квадратных скобках — индекс
+                элемента, например, в ячейке <span class="blue">myPins[0]</span> хранится <span
+                    class="blue">LED_RED</span></p>
+
+            <img src="styles/imgs/9/image 134.png" alt="">
+
+            <p class="text">Кроме того, что к массиву можно обратиться, можно еще и узнать его размер.
+                Оператор <span class="blue">sizeof</span>
+                возвращает количество байтов в типе переменной или количество
+                байтов, занятых массивом. Обратите внимание, что <span class="blue">sizeof</span>
+                возвращает общее количество байтов. Таким образом, для
+                таких массивов, как <span class="blue">int</span>, нужно использовать конструкцию
+                <span class="blue">sizeof(myPins) / sizeof(myPins[0])</span>.
+            </p>
+
+            <p class="text">Далее создаем несколько переменных:</p>
+
+            <pre><code><b>int</b> pin = <span class="light-blue">0</span>; <span class="green">// random choose for turn on led</span>
+<b>int</b> millisec = <span class="light-blue">500</span>;
+<b>int</b> gameStatus = <span class="light-blue">0</span>;
+<b>int</b> score = <span class="light-blue">0</span>;</code></pre><b></b>
+
+            <p class="text">В переменной <span class="blue">pin</span> будем хранить случайный номер
+                светодиода, который нужно подсветить. Следующая переменная — это начальная скорость игры.
+                В переменной <span class="blue">gameStatus</span> будем хранить текущий мод игры, а
+                <span class="blue">score</span> — это количество баллов, которое набрал игрок.
+            </p>
+
+            <p class="text">Далее напишем функцию <span class="blue">setup()</span>: </p>
+
+            <pre><code style="
+                @media (max-width: 992px) {code {width: 910px; position: relative; right: 45px;}}
+                @media (min-width: 1000px){code {width: 91.5%;}}"><b>void <span class="red">setup()</span></b> {
+    lcd.begin(<span class="light-blue">16</span>, <span class="light-blue">2</span>);
+    pinMode(BUTTON_PIN, INPUT_PULLUP); <span class="green">// configurate pin on</span>
+                                 <span class="green">// INPUT for connect button</span>
+    <b>for</b> (<b>int</b> i = <span class="light-blue">0</span>; i < (sizeof(myPins) / 
+                    sizeof(myPins[<span class="light-blue">0</span>])); i++) {
+        pinMode(myPins[i], OUTPUT); <span class="green">// configurate pin on</span>
+                                    <span class="green">// OUTPUT in cycle</span>
+        digitalWrite(myPins[i], LOW);
+    }
+}</code></pre>
+
+            <p class="text">Как вы помните, мы создали массив <span class="blue">myPins</span>. Именно
+                к нему программа будет обращаться каждый раз, когда
+                нужно выполнить какое-либо действие со светодиодами,
+                например, установить режим работы <span class="blue">pinMode</span>. Переберем
+                все элементы массива с помощью цикла <span class="blue">for</span>, для каждого из них установим режим
+                работы, а затем отключим светодиод.</p>
+
+            <p class="text">Перейдем к циклу программы. Здесь мы будем проверять значение переменной
+                <span class="blue">gameStatus</span> и применять нужный мод игры:
+            </p>
+
+            <pre><code><b>void <span class="red">loop()</span></b> {
+    <span class="green">// In what mode are we?</span>
+    <b>switch</b> (gameStatus) {
+        <b>case</b> <span class="light-blue">0</span>:
+            playGame();
+            <b>break</b>;
+        <b>case</b> <span class="light-blue">1</span>:
+            playerWin();
+            <b>break</b>;
+        <b>case</b> <span class="light-blue">2</span>:
+            playerLose();
+            <b>break</b>;
+    }
+}</code></pre>
+
+            <p class="text">Всего у нас есть три мода игры. Первый из них нужен
+                для начала игры, второй — это победа игрока, а третий —
+                проигрыш. Каждый из модов — это функция. Пока что
+                ни одной из них у нас нет.</p>
+
+            <p class="text">Сначала создадим функцию, которая будет работать
+                с LCD-дисплеем и отображать на нем текущий счет игры:</p>
+
+            <pre><code><b>void <span class="red">LCDstart()</span></b> {
+    lcd.display();
+    lcd.clear();
+    lcd.setCursor(<span class="light-blue">0</span>, <span class="light-blue">0</span>);
+    lcd.print(<span class="red">"SCORE:"</span>);
+    lcd.setCursor(<span class="light-blue">7</span>, <span class="light-blue">0</span>);
+    lcd.print(score);
+}</code></pre>
+
+            <p class="text">Выводим на дисплей строку «<span class="blue">SCORE:</span>» и текущий
+                результат игрока из переменной <span class="blue">score</span>, разместим все
+                это в строке 0. Текст разместим в позиции 0, а значение
+                переменной <span class="blue">score</span> поместим в позицию 7.</p>
+
+            <img src="styles/imgs/9/image 135.png" alt="">
+
+            <p class="text">Затем можем написать функцию, с которой начинается игра:</p>
+
+            <pre><code><b>void <span class="red">playGame()</span></b> {
+    LCDstart();
+    pin = random((<b>sizeof</b>(myPins) / <b>sizeof</b>(myPins[<span class="light-blue">0</span>])));
+                                 <span class="green">// random choose pin</span>
+    digitalWrite(myPins[pin], HIGH); <span class="green">// turn on this pin</span>
+
+    <span class="green">// if button pushed</span>
+    <b>if</b> (digitalRead(BUTTON_PIN)) {
+        <b>if</b> (myPins[pin] == LED_RED) {
+            gameStatus = <span class="light-blue">1</span>;
+        }
+        <b>else</b> {
+            gameStatus = <span class="light-blue">2</span>;
+        }
+    } 
+    delay(millisec);
+    digitalWrite(myPins[pin], LOW); <span class="green">//swich off led</span>
+}</code></pre>
+
+            <p class="text">Рассмотрим подробнее функцию <span class="blue">playGame()</span>. Каждый раз генерируется
+                случайное число random() и
+                записывается в переменную pin. Это число и есть индекс
+                элемента в массиве. Затем подсвечивается светодиод
+                <span class="blue">digitalWrite(myPins[pin], HIGH)</span>. После того, как светодиод
+                засветится, ожидаем нажатие кнопки. Если кнопка нажата, пока светился красный светодиод, то игрок
+                выиграл.
+                Если кнопка нажата, когда засветился синий светодиод,
+                то игрок проиграл.
+            </p>
+
+            <p class="text">Напишем функцию победы. Как только игрок нажмет
+                кнопку в то время, когда засветился красный светодиод, он
+                заработает баллы, а скорость игры увеличивается:</p>
+
+            <pre><code style="
+                @media (max-width: 992px) {code {width: 910px; position: relative; right: 45px;}}"><span class="green">//void for blinf leds when player win</span>
+<b>void <span class="red">playerWin()</span></b> {
+    gameStatus = <span class="light-blue">0</span>;
+    score += <span class="light-blue">10000</span> % millisec;
+    <b>if</b> (millisec > <span class="light-blue">50</span>) {
+        millisec -= <span class="light-blue">20</span>;
+    }
+    <b>for</b> (<b>int</b> i = <span class="light-blue">1</span>; i >= <span class="light-blue">0</span>; i--) {
+        <b>for</b> (<b>int</b> j = <span class="light-blue">0</span>; j < (<b>sizeof</b>(myPins) /
+                             <b>sizeof</b>(myPins[<span class="light-blue">0</span>])); j++) {
+            digitalWrite(myPins[j], i);
+        }
+        delay(<span class="light-blue">600</span>);
+    }
+}</code></pre>
+
+            <img src="styles/imgs/9/image 136.png" alt="">
+
+            <p class="text">Если игрок не успел нажать кнопку, то он проиграл, а его баллы уменьшаются:</p>
+
+            <pre><code style="@media (max-width: 992px) {code {width: 910px; position: relative; right: 45px;}}"><b>void <span class="red">playerLose()</span></b> {
+    gameStatus = <span class="light-blue">0</span>;
+    score -= <span class="light-blue">1000</span> / millisec;
+    millisec += <span class="light-blue">10</span>;
+
+    <b>if</b> (score < <span class="light-blue">0</span>) {
+        score = <span class="light-blue">0</span>;
+    }
+
+    <b>for</b> (<b>int</b> i = <span class="light-blue">1</span>; i >= <span class="light-blue">0</span>; i--) {
+        <b>for</b> (<b>int</b> j = <span class="light-blue">1</span>; j < (<b>sizeof</b>(myPins) / 
+                             <b>sizeof</b>(myPins[<span class="light-blue">0</span>])); j++) {
+            digitalWrite(myPins[j], i);
+        }
+        delay(<span class="light-blue">600</span>);
+    }
+}</code></pre>
+
+            <img src="styles/imgs/9/image 137.png" alt="">
+
+            <p class="text">Игра готова! Можем запускать симуляцию, чтобы убедиться, что все работает корректно.
+                Открываем код программы в Arduino IDE. Если неверные отступы
+                или код плохо форматирован, то нажимаем <span class="blue">Ctrl+T</span>. Еще
+                раз убедимся, нет ли ошибок. Для этого нажимаем <span class="blue">Verify</span>. Если все правильно, то
+                загружаем программу на плату Arduino.</p>
+
+            <img src="styles/imgs/9/image 181.png" alt="">
+
+            <div class="button-block">
+                <a target="_blank" href="task_9.html">
+                    <button>Перейти к заданию</button>
+                </a>
+                <a href="lesson_10.html">
+                    <button>Следующий урок</button>
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

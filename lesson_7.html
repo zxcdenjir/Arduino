@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=992px, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/lesson.css">
+    <link rel="icon" href="styles/imgs/arduino-logo-big.png">
+    <title>Урок 7. Игра «Саймон говорит» на Arduino</title>
+</head>
+
+<body>
+    <header>
+        <a href="index.html"><b>
+                <p>Разработка гаджетов на Arduino</p>
+            </b></a>
+    </header>
+    <main>
+        <div class="container">
+            <p class="heading">Урок №7.<br>
+                Игра «Саймон говорит» на Arduino</p>
+
+            <p class="text">Саймон говорит» — простая, но увлекательная игра
+                для трех и более игроков. Суть игры заключается в том,
+                чтобы повторить все, что говорит Саймон. Кроме того,
+                что игра «Саймон говорит» увлекательная, она еще и развивает внимание, зрительную и слуховую память.</p>
+
+            <p class="text">Давайте сделаем аналог игры на Arduino. В начале игры на несколько миллисекунд загорается,
+                а затем гаснет светодиод. Вместе с тем, воспроизводится определенный звук. Игрок должен повторить и
+                нажать на кнопку, расположенную рядом с этим светодиодом.
+                Если игрок угадал, то загораются светодиоды. С каждым
+                разом комбинаций будет все больше и больше, а время,
+                которое светодиоды светятся, будет сокращаться. Чем
+                больше комбинаций игрок повторит, тем лучше будет
+                его результат.</p>
+
+            <p class="text">Начнем разрабатывать свой проект. Откройте шаблон проекта, в котором уже реализованы
+                некоторые вспомогательные функции, они нам понадобятся позже.
+                Добавим две монтажные платы, чтобы разместить все
+                компоненты для игры.</p>
+
+            <img src="styles/imgs/7/image 116.png" alt="">
+
+            <p class="text">Затем добавим 4 кнопки, 4 резистора и 4 светодиода.
+                Также добавим 2 дополнительных светодиода, чтобы подать зеленый или красный свет, который будет
+                загораться, если игрок угадал или не угадал комбинацию. Наконец,
+                подключаем пьезоэлемент к пину 3. Обратите внимание,
+                что маленький символ ~ возле пина 3 означает, что это
+                выходы с использованием ШИМ. Он нужен, чтобы задать
+                тон для зуммера.</p>
+
+            <img src="styles/imgs/7/image 117.png" alt="">
+
+            <p class="text">Заметьте, что каждая кнопка находится возле светодиода, с которым она будет связана.</p>
+
+            <p class="text">Когда все подключено, можем переходить к программированию. Как уже упоминалось, в шаблоне
+                проекта есть вспомогательные функции. Они понадобятся для
+                программы и сократят код. Перейдем к программированию, а код будем писать сразу после комментария
+                <br><span class="green">// Your code goes here</span>. Начнем с инициализации переменных:
+            </p>
+
+            <pre><code><span class="green">// LED pin definitions</span>
+#define LED_RED 11
+#define LED_GREEN 9
+#define LED_BLUE 7
+#define LED_YELLOW 5
+#define LED_CORRECT 4
+#define LED_WRONG 2
+
+<span class="green">// Button pin definitions</span>
+#define BUTTON_RED 12
+#define BUTTON_GREEN 10
+#define BUTTON_BLUE 8
+#define BUTTON_YELLOW 6</code></pre>
+
+            <p class="text">С помощью инструкции <span class="blue">define</span> в начале кода определяем названия
+                переменных. Благодаря такому
+                подходу нам не придется каждый раз проверять на схеме номер
+                пина. Вместо этого, мы будем использовать имя, например, <span class="blue">LED_YELLOW</span> или
+                <span class="blue">BUTTON_YELLOW</span>.
+            </p>
+
+            <p class="text">Затем определяем пин, который соединяется с пьезоэлементом:</p>
+
+            <pre><code><span class="green">// Buzzer definitions</span>
+#define BUZZER 3</code></pre>
+
+            <p class="text">После этого для каждого цвета светодиода указываем
+                тон звука, который будет воспроизводиться:</p>
+
+            <pre><code>#define RED_TONE 220
+#define GREEN_TONE 262
+#define BLUE_TONE 330
+#define YELLOW_TONE 392
+#define TONE_DURATION 250</code></pre>
+
+            <p class="text">Затем создаем переменные:</p>
+
+            <pre><code><span class="green">// Game Variables</span>
+<b>int</b> GAME_SPEED = <span class="light-blue">250</span>;
+<b>int</b> GAME_STATUS = <span class="light-blue">0</span>;
+<b>const int</b> GAME_MAX_SEQUENCE = <span class="light-blue">50</span>;
+<b>int</b> GAME_SEQUENCE[GAME_MAX_SEQUENCE];
+<b>int</b> GAME_STEP = <span class="light-blue">0</span>;
+<b>int</b> READ_STEP = <span class="light-blue">0</span>;</code></pre>
+
+            <p class="text">Первая — это скорость игры в миллисекундах. Чтобы
+                игра с каждым уровнем усложнялась, будем постепенно
+                уменьшать ожидание (<span class="blue">delay</span>). Так светодиоды будут светиться меньше времени, а
+                запомнить
+                последовательность будет сложнее.</p>
+
+            <p class="text">Переменная <span class="blue">GAME_STATUS</span> — это мод игры. У нас
+                их будет 4, а именно: новая игра, конец игры, загадка, ответ игрока.</p>
+
+            <p class="text">Далее напишем функцию <span class="blue">setup()</span>. Для светодиодов и пьезоэлемента
+                устанавливаем режимы выводов на <span class="blue">OUTPUT</span>, а для кнопок указываем
+                <span class="blue">INPUT_PULLUP</span>. Мы также будем использовать
+                <span class="blue">randomSeed</span>, чтобы убедиться, что
+                случайная последовательность, которую мы создаем,
+                каждый раз отличается:
+            </p>
+
+            <pre><code><b>void <span class="red">setup()</span></b>{
+    Serial.begin(<span class="light-blue">9600</span>);
+    randomSeed(analogRead(<span class="light-blue">0</span>));
+    pinMode(LED_RED, OUTPUT);
+    pinMode(LED_GREEN, OUTPUT);
+    pinMode(LED_BLUE, OUTPUT);
+    pinMode(LED_YELLOW, OUTPUT);
+    pinMode(LED_CORRECT, OUTPUT);
+    pinMode(LED_WRONG, OUTPUT);
+    pinMode(BUTTON_RED, INPUT_PULLUP);
+    pinMode(BUTTON_GREEN, INPUT_PULLUP);
+    pinMode(BUTTON_BLUE, INPUT_PULLUP);
+    pinMode(BUTTON_YELLOW, INPUT_PULLUP);
+    pinMode(BUZZER, OUTPUT);
+}</code></pre>
+
+            <p class="text">В цикле будем проверять режим игры, который применяется, например,
+                начало игры или конец игры:</p>
+
+            <pre><code><b>void <span class="red">loop()</span></b>{
+    <span class="green">// In what mode are we?</span>
+    <b>switch</b>(GAME_STATUS){
+        <b>case</b> <span class="light-blue">0</span>:
+            resetGame();
+            <b>break</b>;
+        <b>case</b> <span class="light-blue">1</span>:
+            playSequence();
+            <b>break</b>;
+        <b>case</b> <span class="light-blue">2</span>:
+            readSequence();
+            <b>break</b>;
+        <b>case</b> <span class="light-blue">3</span>:
+            gameOver();
+            <b>break</b>;
+    }
+}</code></pre>
+
+            <p class="text">Если эта переменная равна 0, значит игра начинается
+                заново. Если же она будет равна 1, игрок видит комбинацию в виде последовательного включения
+                светодиодов. Если <span class="blue">GAME_STATUS</span> будет равна 2, то ожидаем нажатие
+                игрока. Как только переменная <span class="blue">GAME_SEQUENCE</span> станет
+                равна 3, игра завершится.</p>
+
+            <p class="text">В цикле мы перечислили функции, которые нужны
+                в игре. Но пока что их не существует, а значит нам нужно их написать. Начнем с функции
+                <span class="blue">resetGame()</span>,
+                которая сбрасываем игру. В этой функции будем заполнять массив
+                <span class="blue">GAME_SEQUENCE</span> комбинациями:
+            </p>
+
+            <pre><code><b>void <span class="red">resetGame()</span></b> {
+    <span class="green">// reset steps</span>
+    READ_STEP = <span class="light-blue">0</span>;
+    GAME_STEP = <span class="light-blue">0</span>;
+
+    <span class="green">// create random sequence</span>
+    <b>for</b> (<b>int</b> i=<span class="light-blue">0</span>; i < GAME_MAX_SEQUENCE; i++) {
+        GAME_SEQUENCE[i] = random(<span class="light-blue">4</span>) + <span class="light-blue">1</span>;
+    }
+
+    <span class="green">// Next game state; show led sequence</span>
+    GAME_STATUS = <span class="light-blue">1</span>;
+}</code></pre>
+
+            <p class="text">Наш следующий шаг — это воспроизведение последовательности:</p>
+
+            <pre><code><b>void <span class="red">playSequence()</span></b> {
+    <span class="green">// play a step of our sequence</span>
+    <b>for</b> (<b>int</b> i=<span class="light-blue">0</span>; i <= GAME_STEP; i++) {
+        Serial.print(<span class="red">"Set LED"</span>);
+        Serial.println(GAME_SEQUENCE[i]);
+        delay(GAME_SPEED*2);
+        setLED(GAME_SEQUENCE[i]);
+        playTone(GAME_SEQUENCE[i]);
+        delay(GAME_SPEED);
+        clearLEDs();
+    }
+    <span class="green">// Go to next step: reading buttons</span>
+    GAME_STATUS = <span class="light-blue">2</span>;
+}</code></pre>
+
+            <img src="styles/imgs/7/image 118.png" alt="">
+
+            <p class="text">После воспроизведения последовательности ожидаем,
+                пока игрок повторит комбинацию с помощью кнопок ввода:</p>
+
+            <pre><code><b>void <span class="red">readSequence()</span></b>{
+    <span class="green">// read our buttons</span>
+    <b>int</b> button_value = readButtons();
+    <b>if</b> (button_value > <span class="light-blue">0</span>) {
+    <span class="green">// a button has been pressed</span>
+        <b>if</b> (button_value == GAME_SEQUENCE[READ_STEP]) {
+            <span class="green">// correct value!</span>
+            setLED(button_value);
+            playTone(button_value);
+            digitalWrite(LED_CORRECT, HIGH);
+            delay(GAME_SPEED);
+            clearLEDs();
+            digitalWrite(LED_CORRECT, LOW);
+
+            <span class="green">// Lets speed it up!</span>
+            <b>if</b> (GAME_SPEED > <span class="light-blue">100</span>) {
+                GAME_SPEED = GAME_SPEED-<span class="light-blue">15</span>;
+            }
+
+            Serial.println(<span class="red">"Correct!"</span>);
+
+            <b>if</b> (READ_STEP == GAME_STEP) {
+                <span class="green">// reset read step</span>
+                READ_STEP = <span class="light-blue">0</span>;
+                <span class="green">// Go to next game step</span>
+                GAME_STEP++;
+                <span class="green">// Go to playback sequence mode of our game</span>
+                GAME_STATUS = <span class="light-blue">1</span>;
+                Serial.println(<span class="red">"Next step"</span>);
+
+                <span class="green">// Light all LEDs to indicate next sequence</span>
+                setLEDs(<span class="light-blue">true</span>,<span class="light-blue">true</span>,<span class="light-blue">true</span>,<span class="light-blue">true</span>);
+                delay(GAME_SPEED);
+                setLEDs(<span class="light-blue">false</span>,<span class="light-blue">false</span>,<span class="light-blue">false</span>,<span class="light-blue">false</span>);
+            }
+            <b>else</b> {
+                READ_STEP++;
+            }
+
+            delay(<span class="light-blue">10</span>);
+            }
+        <b>else</b> {
+            <span class="green">// wrong value!</span>
+            <span class="green">// Go to game over mode</span>
+            GAME_STATUS = <span class="light-blue">3</span>;
+            Serial.println(<span class="red">"Game Over!"</span>);
+        }
+    }
+
+    delay(<span class="light-blue">10</span>);
+}</code></pre>
+
+            <p class="text">Если все верно, то на несколько миллисекунд загорается зеленый светодиод, включаются все
+                светодиоды из комбинации и воспроизводится звуковой сигнал,
+                а в Serial Monitor появится сообщение «<span class="blue">Correct</span>».</p>
+
+            <img src="styles/imgs/7/image 119.png" alt="">
+
+            <p class="text">Если игрок совершил ошибку, то загорается красный
+                светодиод и воспроизводится звуковой сигнал.</p>
+
+            <img src="styles/imgs/7/image 120.png" alt="">
+
+            <p class="text">Когда игрок делает ошибку, завершаем игру:</p>
+
+            <pre><code><b>void <span class="red">gameOver()</span></b> {
+    <span class="green">// Red RGB</span>
+    digitalWrite(LED_WRONG, HIGH);
+    <span class="green">// Play tone</span>
+    tone(BUZZER, <span class="light-blue">98</span>, TONE_DURATION);
+    delay(TONE_DURATION);
+    tone(BUZZER, <span class="light-blue">93</span>, TONE_DURATION);
+    delay(TONE_DURATION);
+    tone(BUZZER, <span class="light-blue">87</span>, TONE_DURATION);
+    delay(TONE_DURATION);
+    delay(GAME_SPEED);
+}</code></pre>
+
+            <p class="text">Наконец, загрузим программу на компьютер</p>
+
+            <img src="styles/imgs/7/image 167.png" alt="">
+
+            <b class="text"><span class="red">Arduino IDE</span></b>
+
+            <p class="text">Моделирование проектов онлайн весьма интересная
+                задача. Но не менее интересно научиться работать с физическими проектами. Познакомимся с программой для
+                работы с платами Arduino.</p>
+
+            <p class="text">Arduino IDE — программа, в которой можно легко
+                написать код и запрограммировать плату. Установить ее
+                с официального сайта (<a href="https://www.arduino.cc/en/main/software"
+                    style="color:blue"><u>https://www.arduino.cc/en/main/software</u></a>). В редакторе можно работать
+                онлайн, в веб-версии, или офлайн, на компьютере. Установим программное обеспечение.</p>
+
+            <img src="styles/imgs/7/image 168.png" alt="">
+
+            <p class="text">Затем нажимаем <span class="blue">Just Download</span>, чтобы загрузить инсталлятор.</p>
+
+            <img src="styles/imgs/7/image 169.png" alt="">
+
+            <p class="text">Следуя инструкции, оставляем все настройки по
+                умолчанию и устанавливаем программное обеспечение.</p>
+
+            <img src="styles/imgs/7/image 170.png" alt="">
+
+            <p class="text">После запуска программы откроется новое окно.</p>
+
+            <img src="styles/imgs/7/image 171.png" alt="">
+
+            <p class="text">В верхней части окна расположено меню. Наводя
+                на каждую из кнопок, справа появится подсказка. Первая
+                кнопка проверяет код, вторая — позволяет загрузить его
+                на плату, третья нужна для того, чтобы создать новый файл.
+                Кнопка с изображением направленной вверх стрелочки
+                открывает файл, а следующая — сохраняет его.</p>
+
+            <img src="styles/imgs/7/image 172.png" style="width: 25%;" alt="">
+
+            <p class="text">В разделе File — Examples можно найти примеры
+                и посмотреть их в редакторе</p>
+
+            <img src="styles/imgs/7/image 173.png" alt="">
+
+            <p class="text">Настроим IDE для работы с конкретной платой. В первую очередь необходимо подключить плату к
+                компьютеру по USB. Выбираем нужную плату в настройках IDE
+                в разделе <span class="blue">Tools — Board: “Arduino/Genuino Uno”</span>.</p>
+
+            <img src="styles/imgs/7/image 174.png" alt="">
+
+            <p class="text">И последний шаг — выбираем COM-порт, к которому
+                подключена плата. На вашем компьютере может
+                быть любой другой порт, выберите его.</p>
+
+            <img src="styles/imgs/7/image 175.png" alt="">
+
+            <p class="text">Теперь необходимо загрузить код в Arduino IDE. Нажимаем <span class="blue">Open</span>
+                или сочетание клавиш <span class="blue">Ctrl + O</span> и выбираем
+                файл <span class="blue">.ino</span>, который мы выгрузили из Tinkercad Circuit.</p>
+
+            <img src="styles/imgs/7/image 176.png" alt="">
+
+            <p class="text">Если появится предупреждение, нажимаем <span class="blue">Ok</span>.</p>
+
+            <img src="styles/imgs/7/image 177.png" alt="">
+
+            <p class="text">Вот мы и открыли код программы, теперь можем
+                загрузить его на плату.</p>
+
+            <img src="styles/imgs/7/image 178.png" alt="">
+
+            <p class="text">По окончанию загрузки, внизу IDE появится сообщение.</p>
+
+            <img src="styles/imgs/7/image 179.png" alt="">
+
+            <p class="text">В результате выполнения данной программы, на Arduino
+                должен замигать встроенный светодиод. Если он мигает, значит все в порядке.</p>
+
+            <div class="button-block">
+                <a target="_blank" href="task_7.html">
+                    <button>Перейти к заданию</button>
+                </a>
+                <a href="lesson_8.html">
+                    <button>Следующий урок</button>
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

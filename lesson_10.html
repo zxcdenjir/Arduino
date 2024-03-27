@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=992px, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/lesson.css">
+    <link rel="icon" href="styles/imgs/arduino-logo-big.png">
+    <title>Урок 10. Таймер на Arduino. Матричные клавиатуры</title>
+</head>
+
+<body>
+    <header>
+        <a href="index.html"><b>
+                <p>Разработка гаджетов на Arduino</p>
+            </b></a>
+    </header>
+    <main>
+        <div class="container">
+            <p class="heading">Урок №10.<br>
+                Таймер на Arduino. Матричные клавиатуры</p>
+
+                <p class="heading">Таймер на Arduino</p>
+
+            <p class="text">Семисегментные дисплеи используются во многих
+                бытовых устройствах, таких как микроволновые печи,
+                стиральные машины и кондиционеры. Это простой, но
+                эффективный способ отображения числовых данных,
+                таких как время, температура, мощность. Поскольку они
+                сделаны из светодиодов, то являются недорогим вариантом для отображения информации.</p>
+
+            <p class="text">На этом занятии мы рассмотрим, как подключить и запрограммировать семисегментный индикатор
+                на Arduino. Сначала разберемся, что из себя представляет такой дисплей.
+                Семисегментные дисплеи бывают самых разных
+                цветов и размеров. Красный, синий и зеленый — самые
+                распространенные цвета. Размеры также меняются от
+                маленьких до средних и больших. Некоторые дисплеи
+                имеют одну цифру, а другие — две или четыре.</p>
+
+            <img src="styles/imgs/10/image 138.png" alt="">
+
+            <p class="text">Прежде чем начать работу с 7-сегментными дисплеями, необходимо понять способы управления
+                ими.
+                Семисегментный индикатор состоит из 7 светодиодов,
+                сегментов, расположенных в форме восьмерки. Большинство 7-сегментных дисплеев на самом деле имеют
+                8 сегментов, включая точку справа от цифры. Каждым
+                сегментом можно отдельно управлять. Подсвечивать его
+                или, наоборот, выключать. Кроме того, каждый сегмент
+                именуется буквой от <span class="blue">A</span> до <span class="blue">G</span>, а точка обозначается
+                буквами <span class="blue">DP</span>.</p>
+
+            <img src="styles/imgs/10/image 139.png" alt="">
+
+            <p class="text">Найдем в Tinkercad Circuits семисегментный дисплей
+                <span class="blue">7 Segment Display</span>.
+            </p>
+
+            <img src="styles/imgs/10/image 140.png" alt="">
+
+            <p class="text">У этого компонента есть еще одна важная особенность.
+                Существует два типа 7-сегментных дисплеев — общий
+                катод и общий анод. К катоду подключают отрицательный
+                полюс, а к аноду — положительный. Нажав на компонент,
+                в свойствах <span class="blue">Common</span> можем выбрать тип.</p>
+
+            <img src="styles/imgs/10/image 141.png" alt="">
+
+            <p class="text">Принципиальная разница в том, что в катодных дисплеях к <span class="blue">Common</span>
+                подключается <span class="blue">GND</span>, а для
+                включения светодиодов подается <span class="blue">HIGH</span>. В обычных анодных дисплеях к
+                <span class="blue">Common</span> подключается 5V, а для включения светодиодов подается
+                <span class="blue">LOW</span>.
+            </p>
+
+            <img src="styles/imgs/10/image 142.png" style="margin-bottom: 25px;" alt="">
+            <img src="styles/imgs/10/image 143.png" alt="">
+
+            <p class="text">Небольшие семисегментные дисплеи обычно имеют
+                10 контактов. Два контакта подключены к земле, а остальные 8 подключены к каждому из сегментов.</p>
+
+            <p class="text">Соберем и запрограммируем таймер на Arduino. Добавим семисегментный дисплей, и подключим
+                сегменты
+                <span class="blue">A–G</span> к пинам <span class="blue">D7-D13</span>.
+            </p>
+
+            <img src="styles/imgs/10/image 144.png" style="margin-bottom: 50px;" alt="">
+            <img src="styles/imgs/10/image 145.png" alt="">
+
+            <p class="text">Запрограммируем плату. Сначала определим названия
+                сегментов и пины, к которым они подключены:</p>
+
+            <pre><code>#define SEGMENT_A 7   <span class="green">//Segment A</span>
+#define SEGMENT_B 8   <span class="green">//Segment B</span>
+#define SEGMENT_C 9   <span class="green">//Segment C</span>
+#define SEGMENT_D 10  <span class="green">//Segment D</span>
+#define SEGMENT_E 11  <span class="green">//Segment E</span>
+#define SEGMENT_F 12  <span class="green">//Segment F</span>
+#define SEGMENT_G 13  <span class="green">//Segment G</span>
+#define BUTTON_PIN 5</code></pre>
+
+            <p class="text">Создадим массив с этими сегментами, но укажем
+                размер массива в квадратных скобках:</p>
+
+            <pre><code><b>int</b> segments[<span class="light-blue">7</span>] = {SEGMENT_A, SEGMENT_B, SEGMENT_C, SEGMENT_D, 
+                   SEGMENT_E, SEGMENT_F, SEGMENT_G
+                  };</code></pre>
+
+            <p class="text">Затем создадим еще один массив — это комбинация
+                сигналов для каждой цифры. Какой сигнал нужно подать
+                на каждый конкретный сегмент, можем увидеть на рисунке.</p>
+
+            <img src="styles/imgs/10/image 146.png" alt="">
+
+            <p class="text">Создадим массив из нескольких строк. Каждая строка — это комбинация сигналов для конкретной
+                цифры.</p>
+
+            <pre><code><b>const</b> byte signals[<span class="light-blue">10</span>][<span class="light-blue">7</span>] = {
+    {<span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>},  <span class="green">// 0</span>
+    {<span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>},  <span class="green">// 1</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>},  <span class="green">// 2</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>},  <span class="green">// 3</span>
+    {<span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>},  <span class="green">// 4</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>},  <span class="green">// 5</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>},  <span class="green">// 6</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>},  <span class="green">// 7</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>},  <span class="green">// 8</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>}   <span class="green">// 9</span>
+};</code></pre>
+
+            <p class="text">Итак, наш массив содержит 10 строк, потому что мы
+                отображаем 10 цифр от 0 до 9. В каждой строке расположено по 7 цифр, то есть комбинация сигналов
+                <span class="blue">HIGH</span> и <span class="blue">LOW</span>, которые нужно подать на сегменты.
+            </p>
+
+            <p class="text">После этого устанавливаем режим работы пинов:</p>
+
+            <pre><code><b>void <span class="red">setup()</span></b> {
+    Serial.begin(<span class="light-blue">9600</span>);
+
+    pinMode(BUTTON_PIN, INPUT_PULLUP);
+
+    <b>for</b> (<b>int</b> i = <span class="light-blue">0</span>; i <= <span class="light-blue">7</span>; i++) {
+        pinMode(segments[i], OUTPUT);
+    }
+}</code></pre>
+
+            <p class="text">Затем переходим к циклу программы. Будем отображать цифры последовательно,
+                начиная с 9 и до 0:</p>
+
+            <pre><code style="
+                @media (max-width: 992px) {code {width: 910px; position: relative; right: 45px;}}
+                "><b>void <span class="red">loop()</span></b> {
+    <b>if</b> (digitalRead(BUTTON_PIN)) {
+        <b>for</b> (<b>int</b> digit = <span class="light-blue">9</span>; digit >= <span class="light-blue">0</span>; digit--) {
+            Serial.print(<span class="red">"Digit: "</span>);
+            Serial.println(digit);
+            Serial.print(<span class="red">"Signal: "</span>);
+            
+            <b>for</b> (<b>int</b> segment = <span class="light-blue">0</span>; segment < <span class="light-blue">7</span>; segment++) {
+                Serial.print(signals[digit][segment]);
+                digitalWrite(segments[segment], 
+                             signals[digit][segment]);
+            }
+            
+            Serial.println();
+            delay(<span class="light-blue">1000</span>);
+        }
+    }
+}</code></pre>
+
+            <p class="text">В цикле <span class="blue">loop()</span> мы создали два цикла <span class="blue">for</span>.
+                В первом цикле перебираются числа, начиная с 9 и заканчивая 0.
+                Это и есть те самые цифры, которые мы хотим отобразить.
+                Каждый раз число записывается в переменную <span class="blue">digit</span>.</p>
+
+            <p class="text">Затем программа видит еще один цикл <span class="blue">for</span>. В нем
+                перебираются числа от 0 до 7, ровно столько сегментов
+                есть в индикаторе. Каждый раз значение записывается
+                в переменную segment. После этого с помощью <span class="blue">digitalWrite</span>
+                на сегмент <span class="blue">segments[segment]</span> подается сигнал
+                <span class="blue">signals[digit][segment]</span>.
+            </p>
+
+            <p class="text">Наша программа готова. Использование цикла позволило нам сократить код. Вместо этого можно
+                было бы для каждой цифры составлять комбинацию из сегмента
+                и сигнала, например, для цифры 9 он выглядел бы так:</p>
+
+            <pre><code>digitalWrite(SEGMENT_A, LOW);
+digitalWrite(SEGMENT_B, LOW);
+digitalWrite(SEGMENT_C, LOW);
+digitalWrite(SEGMENT_D, LOW);
+digitalWrite(SEGMENT_E, HIGH);
+digitalWrite(SEGMENT_F, LOW);
+digitalWrite(SEGMENT_G, LOW);</code></pre>
+
+            <p class="text">Но такой код оказался бы в разы больше!</p>
+
+            <p class="text">Запускаем симуляцию и нажимаем кнопку, чтобы начать обратный отсчет.</p>
+
+            <img src="styles/imgs/10/image 147.png" alt="">
+
+            <p class="heading">Матричные клавиатуры</p>
+
+            <p class="text">Теперь, когда мы знаем, как работать с семисегментным индикатором, можем создать еще один
+                проект — кодовый замок. Для этого проекта будем использовать
+                клавиатуру. Клавиатура — отличный способ предоставить пользователю возможность взаимодействовать
+                с разными элементами. Использовать клавиатуру можно
+                для навигации по меню, ввода паролей или управления
+                роботами.</p>
+
+            <p class="text">Подключим клавиатуру к плате, чтобы управлять
+                содержимым на семисегментном индикаторе. Сначала
+                узнаем, как Arduino распознает нажатия клавиш, а затем
+                запрограммируем клавиатуру.</p>
+
+            <p class="text">Клавиатуры бывают разных размеров, например, 3х4 и 4х4.</p>
+
+            <img src="styles/imgs/10/image 148.png" alt="">
+
+            <p class="text">Кнопки расположены в строках и столбцах. Так, в клавиатуре 3х4 всего 4 строки и 3 столбца, а
+                в клавиатуре 4х4 расположено 4 строки и 4 столбца. Arduino определяет, какая кнопка нажата, по
+                номеру строки и столбца.</p>
+
+            <img src="styles/imgs/10/image 149-150.png" style="width: 80%;" alt="">
+
+            <p class="text">Для начала скопируем созданный проект. Открываем
+                в своем профиле раздел <span class="blue">Circuits</span>, наводим на колесико
+                с настройками и нажимаем <span class="blue">Options</span> — <span class="blue">Duplicate</span>.</p>
+
+            <p class="text">Найдем клавиатуру <span class="blue">Keypad 4х4</span> и добавим ее в проект.</p>
+
+            <img src="styles/imgs/10/image 151.png" alt="">
+
+            <p class="text">Удалим кнопку и подключим клавиатуру.</p>
+
+            <img src="styles/imgs/10/image 152.png" alt="">
+
+            <p class="text">Соединим пины <span class="blue">D3-D6</span> с выходами
+                <span class="blue">Row 1-Row 4</span>, а <span class="blue">D0-D2</span> соединим с
+                <span class="blue">Column 1-Column 3.</span>
+            </p>
+
+            <img src="styles/imgs/10/image 153.png" alt="">
+
+            <p class="text">Можем запрограммировать плату. Сначала подключаем библиотеку:</p>
+
+            <pre><code>#include &lt;Keypad.h></code></pre>
+
+            <p class="text">Затем определяем пины для семисегментного индикатора:</p>
+
+            <pre><code>#define SEGMENT_A 7  <span class="green">//Segment A</span>
+#define SEGMENT_B 8  <span class="green">//Segment B</span>
+#define SEGMENT_C 9  <span class="green">//Segment C</span>
+#define SEGMENT_D 10 <span class="green">//Segment D</span>
+#define SEGMENT_E 11 <span class="green">//Segment E</span>
+#define SEGMENT_F 12 <span class="green">//Segment F</span>
+#define SEGMENT_G 13 <span class="green">//Segment G</span></code></pre>
+
+            <p class="text">И определяем две константы — количество строк и столбцов:</p>
+
+            <pre><code>#define ROWS 4
+#define COLS 3</code></pre>
+
+            <p class="text">Затем создаем переменную:</p>
+
+            <pre><code><b>int</b> digit = <span class="light-blue">0</span>;</code></pre>
+
+            <p class="text">И вновь создаем два массива, как это делали для программирования семисегментного индикатора:
+            </p>
+
+            <pre><code><b>int</b> segments[<span class="light-blue">7</span>] = {SEGMENT_A, SEGMENT_B, SEGMENT_C, SEGMENT_D, 
+                   SEGMENT_E, SEGMENT_F, SEGMENT_G
+                  };
+
+<b>const</b> byte signals[<span class="light-blue">10</span>][<span class="light-blue">7</span>] = {
+    {<span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>},  <span class="green">// 0</span>
+    {<span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>},  <span class="green">// 1</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>},  <span class="green">// 2</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>},  <span class="green">// 3</span>
+    {<span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>},  <span class="green">// 4</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>},  <span class="green">// 5</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>},  <span class="green">// 6</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>, <span class="light-blue">1</span>},  <span class="green">// 7</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>},  <span class="green">// 8</span>
+    {<span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>, <span class="light-blue">0</span>}   <span class="green">// 9</span>
+};</code></pre>
+
+            <p class="text">Создадим два массива со строками и столбцами. Для
+                каждого из них указываем пины:</p>
+
+            <pre><code>byte rowPins[ROWS] = {<span class="light-blue">6</span>, <span class="light-blue">5</span>, <span class="light-blue">4</span>, <span class="light-blue">3</span>};
+byte colPins[COLS] = {<span class="light-blue">2</span>, <span class="light-blue">1</span>, <span class="light-blue">0</span>};</code></pre>
+
+            <p class="text">Кроме того, создадим массив из символов:</p>
+
+            <pre><code><b>char</b> hexaKeys[ROWS][COLS] = {
+    {<span class="red">'1'</span>, <span class="red">'2'</span>, <span class="red">'3'</span>},
+    {<span class="red">'4'</span>, <span class="red">'5'</span>, <span class="red">'6'</span>},
+    {<span class="red">'7'</span>, <span class="red">'8'</span>, <span class="red">'9'</span>},
+    {<span class="red">'*'</span>, <span class="red">'0'</span>, <span class="red">'#'</span>}
+};</code></pre>
+
+            <p class="text">Инициализируем экземпляр класса <span class="blue">Keypad</span>:</p>
+
+            <pre><code>Keypad customKeypad = Keypad(makeKeymap(hexaKeys),
+                      rowPins, colPins, ROWS, COLS);</code></pre>
+
+            <p class="text">В функции <span class="blue">setup()</span> устанавливаем режим работы пинов:</p>
+
+            <pre><code><b>void <span class="red">setup()</span></b> {
+    <b>for</b> (<b>int</b> i = <span class="light-blue">0</span>; i <= <span class="light-blue">7</span>; i++) {
+        pinMode(segments[i], OUTPUT);
+    }
+}</code></pre>
+
+            <p class="text">В цикле обрабатываем кнопку, на которую нажал
+                пользователь, и выводим число на семисегментный индикатор:</p>
+
+            <pre><code style="
+                @media (max-width: 992px) {code {width: 910px; position: relative; right: 45px;}}"><b>void <span class="red">loop()</span></b> {
+    <b>char</b> customKey = customKeypad.getKey();
+
+    <b>if</b> (customKey) {
+        <b>if</b> (customKey == <span class="red">'*'</span> || customKey == <span class="red">'#'</span>) {
+            digit = <span class="light-blue">0</span>;
+        }
+        <b>else</b> {
+            digit = (<b>int</b>)customKey - <span class="light-blue">48</span>;
+        }
+
+        <b>for</b> (<b>int</b> segment = <span class="light-blue">0</span>; segment < <span class="light-blue">7</span>; segment++) {
+            digitalWrite(segments[segment], 
+                         signals[digit][segment]);
+        }
+    }
+}</code></pre>
+
+            <p class="text">Поскольку все, что мы нажмем на клавиатуре, программа воспринимает как символ, этот символ
+                нужно преобразовать в число. Компьютеры обрабатывают только цифры, поэтому существует специальная
+                таблица ASCII, где каждый символ представлен в виде числа. Посмотреть полную таблицу можно по ссылке:
+                <u style="color: blue;">
+                    <a style="color: blue;" target="_blank"
+                        href="https://www.ascii-code.com">https://www.ascii-code.com</a>
+                </u>.
+                Как видите, цифра <span class="blue">0</span> кодируется числом <span class="blue">48</span>,
+                <span class="blue">1</span> представлена <span class="blue">49</span> и т.д.
+            </p>
+
+            <img src="styles/imgs/10/image 154.png" alt="">
+
+            <p class="text">Таким образом, чтобы перевести символ в число,
+                указываем перед переменной <span class="blue">customKey</span> тип данных 
+                (<span class="blue">int</span>) и отнимаем <span class="blue">48</span>.</p>
+
+            <p class="text">Программа готова! Теперь, чтобы мы не нажали на клавиатуре, это значение сразу же
+                отобразится на семисегментном индикаторе.</p>
+
+            <img src="styles/imgs/10/image 155.png" alt="">
+
+            <p class="text">Зная, как программировать семисегментные дисплеи,
+                можно собрать таймер, часы, будильник, информационное табло и многое другое. К примеру, можно собрать
+                настольные часы.</p>
+
+            <p class="text">Не обязательно ограничиваться маленьким устройством, для проектов можно использовать и
+                дисплеи больших размеров.</p>
+
+            <div class="button-block">
+                <a target="_blank" href="lesson_9.html">
+                    <button>Предыдущий урок</button>
+                </a>
+                <a href="lesson_11.html">
+                    <button>Следующий урок</button>
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=992px, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/lesson.css">
+    <link rel="icon" href="styles/imgs/arduino-logo-big.png">
+    <title>Урок 8. Мини пианино</title>
+</head>
+
+<body>
+    <header>
+        <a href="index.html"><b>
+                <p>Разработка гаджетов на Arduino</p>
+            </b></a>
+    </header>
+    <main>
+        <div class="container">
+            <p class="heading">Урок №8.<br>
+                Мини пианино</p>
+
+            <p class="text">В современном мире сложно представить какое-либо устройство без дисплея. Практически все,
+                чем мы ежедневно пользуемся, оснащено дисплеями. Речь идет
+                о телефонах, планшетах, часах и других устройствах. Для
+                Arduino существует целый ряд LCD-дисплеев. Основное
+                их отличие — размер</p>
+
+            <p class="text">Рассмотрим дисплей 16x2, где число 2 означает, что
+                дисплей имеет 2 строчки, а 16 — это количество символов
+                в каждой строке.</p>
+
+            <img src="styles/imgs/8/image 121.png" alt="">
+
+            <p class="text">Разработаем небольшой проект на Arduino с использованием LCD-дисплея. Создадим мини-пианино
+                на Arduino.
+            </p>
+
+            <p class="text">У обычного пианино есть клавиши, а нажатие на каждую из них воспроизводит определенный звук.
+                Добавим 7 кнопок, которые будут выполнять роль клавиш пианино</p>
+
+            <img src="styles/imgs/8/image 122.png" alt="">
+
+            <p class="text">Каждая кнопка — это одна из основных нот: до, ре,
+                ми, фа, соль, ля, си. Этот набор клавиш повторяется несколько раз, а каждое его повторение
+                называется октавой. Давайте сделаем одну октаву, чтобы понять, как
+                работает такая схема.</p>
+
+            <img src="styles/imgs/8/image 123.png" alt="">
+
+            <p class="text">Кроме того, нам понадобится дисплей. Мы заранее
+                напишем мелодии, которые можно будет воспроизвести.
+                Чтобы пользователь самостоятельно мог выбрать мелодию,
+                на LCD-дисплее будет отображаться название.</p>
+
+            <img src="styles/imgs/8/image 124.png" alt="">
+
+            <p class="text">Нажимая на дополнительную кнопку, на дисплее
+                будет меняться название мелодии. Если мы
+                захотим её прослушать, то просто нажимаем на одну
+                из 7 клавиш, которые мы запрограммируем в качестве
+                клавиш пианино.</p>
+
+            <img src="styles/imgs/8/image 125.png" style="margin-bottom: 25px;" alt="">
+
+            <img src="styles/imgs/8/image 126.png" alt="">
+
+            <p class="text">Откроем шаблон проекта с заготовками кода. Подключим дисплей, кнопки, светодиод и
+                пьезоэлемент к плате Arduino, как показано на изображении.</p>
+
+            <p class="text">Подключить дисплей к плате Arduino не составит
+                труда, однако этот процесс немного отличается от подключения обычного светодиода. На дисплее 16×2
+                расположено 16 пинов.</p>
+
+            <img src="styles/imgs/8/image 127.png" style="margin-bottom: 25px;" alt="">
+
+            <img src="styles/imgs/8/image 128.png" alt="">
+
+            <p class="text">Подключаем напряжение и заземление к пинам
+                GND, VCC, Vo, R/W, A, K. Затем соединяем RS с пином
+                12 на Arduino, а E подключаем к 11 пину. После этого
+                подключаем DB4, DB5, DB6, DB7 к пинам D5, D4, D3, D2
+                на плате Arduino.</p>
+
+            <p class="text">Переходим к кнопкам. Как видите, к каждой из них
+                мы подключили резисторы с разными сопротивлениями.
+                Существует большое количество резисторов. Они отличаются силой сопротивления. На резисторах нет никаких
+                обозначений, а номинал определяется по цветам</p>
+
+            <p class="text">Взгляните на рисунок, где с помощью комментариев
+                указано сопротивление каждого резистора.</p>
+
+            <img src="styles/imgs/8/image 129.png" alt="">
+
+            <p class="text">Запрограммируем микроконтроллер. Для программирования LCD-дисплеев есть специальная
+                библиотека <span class="blue">LiquidCrystal</span>. В <span class="blue">Tinkercad Circuits</span>
+                нажимаем <span class="blue">Libraries</span>
+                и нажимаем <span class="blue">Include</span> напротив <span class="blue">LiquidCrystal</span>, чтобы
+                подключить библиотеку.</p>
+
+            <img src="styles/imgs/8/image 130.png" alt="">
+
+            <p class="text">В программу будет добавлен код: </p>
+
+            <pre><code>#include &lt;LiquidCrystal.h&gt;</code></pre>
+
+            <p class="text">Инициализируем объект дисплея, указав все пины,
+                к которым он подключен:</p>
+
+            <pre><code>LiquidCrystal <span class="red">lcd</span>(<span class="light-blue">12</span>, <span class="light-blue">11</span>, <span class="light-blue">5</span>, <span class="light-blue">4</span>, <span class="light-blue">3</span>, <span class="light-blue">2</span>);</code></pre>
+
+            <p class="text">Первые два параметра — это RS и E, а следующие
+                четыре пина — это DB4–DB7 на LCD-дисплее.</p>
+
+            <p class="text">Затем инициализируем пины, к которым подключены
+                кнопки и светодиод, а также создадим переменные. Сначала
+                создаем имя переменной и пин, к которому подключена
+                кнопка выбора меню:</p>
+
+            <pre><code><b>const int</b> LCDSwitchPin = <span class="light-blue">7</span>;</code></pre>
+
+            <p class="text">Создадим две переменные. Одну, чтобы контролировать, нажата ли кнопка, а вторую в качестве
+                счетчика нажатий:</p>
+
+            <pre><code><b>int</b> LCDSwitchState = <span class="light-blue">0</span>;
+<b>int</b> LCDSwitchCounter = <span class="light-blue">0</span>;</code></pre>
+
+            <p class="text">Инициализируем пины, к которым подключены светодиод и 7 кнопок:</p>
+
+            <pre><code><b>int</b> LEDBlue = <span class="light-blue">6</span>;
+<b>int</b> notesButton = A0;</code></pre>
+
+            <p class="text">Затем выставляем разную частоту нот:</p>
+
+            <pre><code><b>int</b> notes[] = {<span class="light-blue">262</span>, <span class="light-blue">294</span>, <span class="light-blue">330</span>, <span class="light-blue">349</span>, <span class="light-blue">392</span>, <span class="light-blue">440</span>, <span class="light-blue">494</span>};
+<span class="green">// Set notes C, D, E, F, G, A, B</span></code></pre>
+
+            <p class="text">Инициализируем функцию <span class="blue">setup()</span>. Нужно указать
+                размер дисплея, с помощью функции <span class="blue">lcd.begin</span>. Внутри
+                этой функции указываем количество символов в строке
+                и количество строк, то есть 16 на 2:</p>
+
+            <pre><code><b>void <span class="red">setup()</span></b> {
+    Serial.begin(<span class="light-blue">9600</span>);
+    lcd.begin(<span class="light-blue">16</span>, <span class="light-blue">2</span>);
+    pinMode(LCDSwitchPin, INPUT);
+    pinMode(LEDBlue, OUTPUT);
+    digitalWrite(LEDBlue, LOW); <span class="green">// LED stays off while</span>
+                                <span class="green">// piano keys are on</span>
+}</code></pre>
+
+            <p class="text">Теперь можем использовать LCD-дисплей. В библиотеке,
+                которую мы подключили, содержится множество функций
+                для работы с дисплеем. К примеру, <span class="blue">lcd.clear()</span> позволяет
+                очистить дисплей, и вернуть курсор в начало экрана. Чтобы
+                подключить дисплей, используем метод <span class="blue">lcd.display()</span>, а отключаем с помощью
+                <span class="blue">lcd.noDisplay()</span>. Наконец,
+                используя функцию <span class="blue">lcd.print()</span>, можем выводить текст на дисплей.
+            </p>
+
+            <p class="text">Напишем главный цикл программы. Каждый раз в цикле
+                будем обрабатывать информацию с кнопок. Если пользователь
+                нажал кнопку управления меню, то загорается светодиод,
+                а на дисплее появляется текст. Иначе, если игрок нажал
+                одну из кнопок «пианино», то воспроизводится мелодия:
+            </p>
+
+            <pre><code style="
+            @media (max-width: 992px) {code {width: 910px; position: relative; right: 45px;}}
+            @media (min-width: 1000px){code {width: 91.5%;}}"><b>void <span class="red">loop()</span></b> {
+    LCDSwitchState = digitalRead(LCDSwitchPin);
+    <b>int</b> keyVal = analogRead(notesButton);
+    Serial.println(keyVal);
+    lcd.noDisplay();
+    digitalWrite(LEDBlue, LOW);       <span class="green">// Turn LED back off</span>
+                                      <span class="green">// every time main loop</span>
+                                      <span class="green">// starts</span>
+    <b>if</b> (LCDSwitchState == HIGH) {
+        digitalWrite(LEDBlue, HIGH);  <span class="green">// Turn LED on to</span>
+                                      <span class="green">// show piano keys are</span>
+                                      <span class="green">// disabled and device</span>
+                                      <span class="green">// is in "menu mode"</span>
+        lcd.display();
+        lcd.clear();
+        LCDstart();
+    }
+    <b>if</b> (keyVal == <span class="light-blue">1023</span>) {
+        tone(<span class="light-blue">8</span>, notes[<span class="light-blue">0</span>]); <span class="green">// C</span>
+    }
+    <b>else if</b> (keyVal >= <span class="light-blue">990</span> & keyVal <= <span class="light-blue">1010</span>) {
+        tone(<span class="light-blue">8</span>, notes[<span class="light-blue">1</span>]); <span class="green">// D</span>
+    }
+    <b>else if</b> (keyVal >= <span class="light-blue">960</span> && keyVal <= <span class="light-blue">980</span>) {
+        tone(<span class="light-blue">8</span>, notes[<span class="light-blue">2</span>]); <span class="green">// E</span>
+    }
+    <b>else if</b> (keyVal >= <span class="light-blue">900</span> && keyVal <= <span class="light-blue">945</span>) {
+        tone(<span class="light-blue">8</span>, notes[<span class="light-blue">3</span>]); <span class="green">// F</span>
+    }
+    <b>else if</b> (keyVal >= <span class="light-blue"650></span> && keyVal <= <span class="light-blue">710</span>) {
+        tone(<span class="light-blue">8</span>, notes[<span class="light-blue">4</span>]); <span class="green">// G</span>
+    }
+    <b>else if</b> (keyVal >= <span class="light-blue">500</span> && keyVal <= <span class="light-blue">550</span>) {
+        tone(<span class="light-blue">8</span>, notes[<span class="light-blue">5</span>]); <span class="green">// A</span>
+    }
+    <b>else if</b> (keyVal >= <span class="light-blue">5</span> && keyVal <= <span class="light-blue">10</span>) {
+        tone(<span class="light-blue">8</span>, notes[<span class="light-blue">6</span>]); <span class="green">// B</span>
+    }
+    <b>else if</b> (keyVal <= <span class="light-blue">1</span>) {  <span class="green">// if no switch is pressed,</span>
+                             <span class="green">// do not play tone</span>
+        noTone(<span class="light-blue">8</span>);
+    }
+}</code></pre>
+
+            <p class="text">В функции <span class="blue">loop()</span> проверяем два условия. Если кнопка
+                нажата — <span class="blue">if (LCDSwitchState == HIGH)</span>, то включается
+                дисплей и предлагаем выбрать мелодию. Если нажата одна
+                из семи клавиш пианино — <span class="blue">if (keyVal…)</span>, то воспроизводится тон. Как вы помните,
+                для кнопок мы
+                использовали
+                резисторы с разным напряжением, чтобы изменить тон
+                кнопок пианино. К примеру, 220 Ом — нота <span class="blue">C5</span>, 560 Ом —
+                нота <span class="blue">D5</span> и так далее.</p>
+
+            <p class="text">У нас есть кнопка, с помощью которой можно управлять
+                меню. Как только мы нажмем на нее, активируется
+                дисплей. Напишем функцию, где будут обрабатываться
+                нажатия кнопки и выбор игрока:</p>
+
+            <pre><code style="width: fit-content;
+                @media (max-width: 992px) {code {width: 910px; position: relative; right: 45px; font-size: 20px;}}
+                @media (max-width: 1920px){code {width: 91.5%;}}"><b>void <span class="red">LCDstart()</span></b> {
+    <b>int</b> keyVal = analogRead(notesButton);
+    LCDSwitchState = digitalRead(LCDSwitchPin); 
+                                <span class="green">// check state of menu button</span>
+
+    while (LCDSwitchState == LOW) { <span class="green">// continue loop</span>
+                             <span class="green">// while menu button isn't pressed</span>
+        LCDSwitchState = digitalRead(LCDSwitchPin); 
+                                <span class="green">// check state of menu button</span>
+                                <span class="green">// every time loop starts</span>
+
+        <span class="green">//********** START SONG 1 TITLE LOOP **********</span>
+        <b>if</b> (LCDSwitchState == HIGH) { <span class="green">// if menu button</span>
+                                      <span class="green">// is pressed,</span>
+                                      <span class="green">// then...</span>
+            LCDSwitchCounter++; <span class="green">// set button count to 1</span>
+            Serial.print(<span class="red">"number of button pushes: "</span>);
+            Serial.println(LCDSwitchCounter);
+            delay(<span class="light-blue">300</span>); <span class="green">// min. time until counts adds 1 more</span>
+            Song1title();
+            lcd.clear();
+            <b>break</b>;
+        }
+        
+        <span class="green">//************* ELSE SHOW MENU ****************</span>
+        <b>else</b> { <span class="green">// if menu button is not pressed, then...</span>
+            LCDSwitchCounter = <span class="light-blue">0</span>; <span class="green">// set menu button</span>
+                                  <span class="green">// count to 0</span>
+            lcd.clear();
+            lcd.setCursor(<span class="light-blue">0</span>, <span class="light-blue">0</span>);
+            lcd.print(<span class="red">"WHICH SONG WOULD"</span>);
+            lcd.setCursor(<span class="light-blue">0</span>, <span class="light-blue">1</span>);
+            lcd.print(<span class="red">"YOU LIKE TO PLAY"</span>);
+            delay(<span class="light-blue">50</span>); <span class="green">// return to main</span>
+        }
+    }
+}</code></pre>
+
+            <img src="styles/imgs/8/image 131.png" alt="">
+
+            <p class="text">Программа готова, теперь перенесем ее в Arduino
+                IDE. Загружаем файл в формате .ino из Tinkercad Circuits
+                и открываем его в Arduino IDE. Затем загружаем проект
+                на плату.</p>
+
+            <img src="styles/imgs/8/image 180.png" alt="">
+
+            <p class="text">Итак, мы сделали пианино. Наше устройство готово,
+                но его можно ещё улучшить и усовершенствовать.</p>
+
+            <div class="button-block">
+                <a target="_blank" href="task_8.html">
+                    <button>Перейти к заданию</button>
+                </a>
+                <a href="lesson_9.html">
+                    <button>Следующий урок</button>
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

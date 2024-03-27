@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=992px, initial-scale=1.0">
+        <link rel="stylesheet" href="styles/main.css">
+        <link rel="stylesheet" href="styles/lesson.css">
+        <link rel="icon" href="styles/imgs/arduino-logo-big.png">
+        <title>Практическая работа №5</title>
+    </head>
+    <body>
+        <header>
+            <a href="index.html"><b><p>Разработка гаджетов на
+                        Arduino</p></b></a>
+        </header>
+        <main>
+            <div class="container">
+                <p class="heading">Практическая работа №5.<br>
+                    Программирование платы</p>
+                <b class="text">Задание</b><br>
+                <p class="text">Откройте проект, разработанный на уроке.
+                    Подключите
+                    к схеме несколько светодиодов. Запрограммируйте светодиоды
+                    так, чтобы они загорались в начале игры. Для этого
+                    в функцию <span class="blue">setup()</span> добавьте код.
+                    Например, для светодиода, подключенного к пину
+                    <span class="blue">0</span>, нужно добавить следующую
+                    строчку кода:</p>
+
+                <pre><code><b>void <span class="red">setup()</span></b>
+{
+    pinMode(0, OUTPUT);
+    ...
+}</code></pre>
+
+                <p class="text">Затем в цикле добавьте код, чтобы этот светодиод
+                    светился всегда:</p>
+
+                <pre><code><b>void <span class="red">loop()</span></b>
+{
+    digitalWrite(0, HIGH);
+    ...
+}</code></pre>
+
+                <b class="text" style="margin-bottom: 25px;">
+                    Пример выполненной работы:</b>
+                <img style="margin-bottom: 25px;"
+                    src="styles/imgs/5/image 100.png" alt>
+                <img style="margin-bottom: 100px;"
+                    src="styles/imgs/5/image 101.png" alt>
+
+                <p class="text">Усовершенствуйте игру и добавьте в нее еще
+                    одного игрока. Для этого добавьте на схему кнопку и
+                    светодиод. В программе измените количество игроков с двух до
+                    трех, а для этого поменяйте следующую строку кода:</p>
+
+                <pre><code>#define PLAYER_COUNT 2</code></pre>
+
+                <p class="text">Кроме того, добавьте номера пинов, к которым
+                    подключены кнопка и диод в следующих строках кода:</p>
+
+                <pre><code><b>int</b> buttonPins[PLAYER_COUNT] = {<span class="light-blue">2</span>, <span class="light-blue">13</span>};
+<b>int</b> ledPins[PLAYER_COUNT] = {<span class="light-blue">3</span>, <span class="light-blue">12</span>};</code></pre>
+
+                <p class="text" style="margin-bottom: 60px;">В первую строку кода добавьте номер пина, к
+                    которому
+                    подключена кнопка, а во вторую строку добавьте номер
+                    пина, к которому подключен светодиод.</p>
+
+                <div class="button-block">
+                    <a target="_blank" href="lesson_4.html">
+                        <button>Предыдущий урок</button>
+                    </a>
+                    <a href="lesson_6.html">
+                        <button>Следующий урок</button>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>
